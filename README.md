@@ -1,6 +1,6 @@
-# Teacher Chyma | Ezeigbo Chidimma Mary - Mathematics Educator Website
+# Teacher Chyma | Chidimma Mary - Mathematics Educator Website
 
-A modern, vibrant, colorful, playful yet sophisticated website for **Ezeigbo Chidimma Mary**, a professional Mathematics Educator and EdTech Specialist.
+A modern, vibrant, colorful, playful yet sophisticated website for **Chidimma Mary**, a professional Mathematics Educator and EdTech Specialist.
 
 ![Teacher Chyma Banner](assets/hero_teacher_math.png)
 
@@ -53,7 +53,7 @@ Dimma/
 
 ## 📧 Contact Information
 
-- **Name**: Ezeigbo Chidimma Mary
+- **Name**: Chidimma Mary
 - **Email**: teacherchyma@gmail.com
 - **WhatsApp / Phone**: +234 912 724 5516
 - **Location**: Anambra, Nigeria (Online Sessions Worldwide)
