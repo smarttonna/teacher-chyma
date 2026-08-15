@@ -1,0 +1,1174 @@
+/* ==========================================================================
+   EZEIGBO CHIDIMMA MARY - MATHEMATICS EDUCATOR WEBSITE STYLESHEET
+   Style: Colorful, Playful & Sophisticated EdTech Modern Design
+   Mobile & Responsive Optimized + Interactive Component System
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. Design Tokens & CSS Custom Properties
+   -------------------------------------------------------------------------- */
+:root {
+  /* Brand Primary Colors */
+  --primary-hue: 239;
+  --primary: hsl(var(--primary-hue), 84%, 67%);
+  --primary-dark: hsl(var(--primary-hue), 70%, 54%);
+  --primary-light: hsl(var(--primary-hue), 90%, 94%);
+  
+  /* Accent Colors */
+  --accent-teal: #0EA5E9;
+  --accent-teal-light: #E0F2FE;
+  --accent-amber: #F59E0B;
+  --accent-amber-light: #FEF3C7;
+  --accent-coral: #F43F5E;
+  --accent-coral-light: #FFE4E6;
+  --accent-emerald: #10B981;
+  --accent-emerald-light: #D1FAE5;
+  --accent-purple: #8B5CF6;
+  
+  /* Neutral Color Palette (Light Theme Default) */
+  --bg-main: #F8FAFC;
+  --bg-card: rgba(255, 255, 255, 0.88);
+  --bg-card-solid: #FFFFFF;
+  --bg-header: rgba(255, 255, 255, 0.92);
+  --text-main: #0F172A;
+  --text-muted: #475569;
+  --text-subtle: #64748B;
+  --border-color: rgba(226, 232, 240, 0.9);
+  --glass-border: rgba(255, 255, 255, 0.7);
+  --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 10px 25px -5px rgba(99, 102, 241, 0.12);
+  --shadow-lg: 0 20px 35px -10px rgba(99, 102, 241, 0.2);
+
+  /* Layout & Spacing */
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-full: 9999px;
+  --transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  --font-heading: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+/* Dark Theme Overrides */
+[data-theme="dark"] {
+  --bg-main: #0B0F19;
+  --bg-card: rgba(17, 24, 39, 0.85);
+  --bg-card-solid: #111827;
+  --bg-header: rgba(11, 15, 25, 0.92);
+  --text-main: #F8FAFC;
+  --text-muted: #94A3B8;
+  --text-subtle: #64748B;
+  --border-color: rgba(30, 41, 59, 0.8);
+  --glass-border: rgba(255, 255, 255, 0.12);
+  --shadow-md: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 20px 35px -10px rgba(0, 0, 0, 0.7);
+  --primary-light: rgba(99, 102, 241, 0.2);
+  --accent-teal-light: rgba(14, 165, 233, 0.18);
+  --accent-amber-light: rgba(245, 158, 11, 0.18);
+  --accent-coral-light: rgba(244, 63, 94, 0.18);
+  --accent-emerald-light: rgba(16, 185, 129, 0.18);
+}
+
+/* --------------------------------------------------------------------------
+   2. Reset & Strict Mobile Container Boundaries
+   -------------------------------------------------------------------------- */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  line-height: 1.5;
+  max-width: 100vw;
+  overflow-x: hidden;
+  position: relative;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+ul {
+  list-style: none;
+}
+
+button, input, select, textarea {
+  font-family: inherit;
+  font-size: inherit;
+  border: none;
+  outline: none;
+}
+
+button {
+  cursor: pointer;
+}
+
+.container {
+  width: 90%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.section {
+  padding: 80px 0;
+  position: relative;
+}
+
+/* Typography Utilities */
+h1, h2, h3, h4, .font-heading {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--accent-purple) 50%, var(--accent-coral) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
+}
+
+.section-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  background: var(--primary-light);
+  color: var(--primary-dark);
+  font-weight: 600;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+
+.section-title {
+  font-size: 2.2rem;
+  margin-bottom: 12px;
+}
+
+.section-subtitle {
+  font-size: 1.05rem;
+  color: var(--text-muted);
+  max-width: 650px;
+  margin-bottom: 32px;
+}
+
+.text-center {
+  text-align: center;
+}
+.mx-auto {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* --------------------------------------------------------------------------
+   3. Glassmorphism Components & Interactive Tabs
+   -------------------------------------------------------------------------- */
+.glass-card {
+  background: var(--bg-card);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  transition: var(--transition);
+}
+
+.glass-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border-radius: var(--radius-full);
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: var(--transition);
+  white-space: nowrap;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  color: #FFFFFF;
+  box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
+}
+
+.btn-primary:hover {
+  box-shadow: 0 12px 25px rgba(99, 102, 241, 0.45);
+  transform: translateY(-2px);
+}
+
+.btn-secondary {
+  background: var(--bg-card);
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
+}
+
+.btn-secondary:hover {
+  background: var(--primary-light);
+  color: var(--primary-dark);
+  border-color: var(--primary);
+  transform: translateY(-2px);
+}
+
+.btn-whatsapp {
+  background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+  color: #FFFFFF;
+  box-shadow: 0 8px 20px rgba(37, 211, 102, 0.3);
+}
+
+.btn-whatsapp:hover {
+  transform: translateY(-2px);
+}
+
+.btn-sm {
+  padding: 8px 16px;
+  font-size: 0.85rem;
+}
+
+/* Interactive Tabs Component Styles */
+.interactive-tab-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--bg-card);
+  padding: 6px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border-color);
+  margin-bottom: 24px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.interactive-tab-bar::-webkit-scrollbar {
+  display: none;
+}
+
+.tab-btn {
+  padding: 10px 20px;
+  border-radius: var(--radius-full);
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  background: transparent;
+  transition: var(--transition);
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tab-btn:hover {
+  color: var(--primary);
+}
+
+.tab-btn.active {
+  background: var(--primary);
+  color: #FFFFFF;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.35);
+}
+
+.tab-content {
+  display: none;
+  animation: fadeInTab 0.3s ease;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+@keyframes fadeInTab {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* --------------------------------------------------------------------------
+   4. Floating Math Background Symbols
+   -------------------------------------------------------------------------- */
+.bg-math-patterns {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.math-symbol {
+  position: absolute;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  color: var(--primary);
+  opacity: 0.07;
+  user-select: none;
+  animation: floatMath 12s ease-in-out infinite alternate;
+}
+
+@keyframes floatMath {
+  0% { transform: translateY(0) rotate(0deg); }
+  100% { transform: translateY(-25px) rotate(15deg); }
+}
+
+/* --------------------------------------------------------------------------
+   5. Navigation Bar
+   -------------------------------------------------------------------------- */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 100;
+  background: var(--bg-header);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.navbar .container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 70px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.25rem;
+  font-weight: 800;
+}
+
+.logo-badge {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--accent-purple) 100%);
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
+.nav-link {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  transition: var(--transition);
+}
+
+.nav-link:hover {
+  color: var(--primary);
+}
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.theme-toggle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  transition: var(--transition);
+}
+
+.mobile-toggle {
+  display: none;
+  font-size: 1.4rem;
+  background: none;
+  color: var(--text-main);
+  padding: 4px;
+}
+
+/* --------------------------------------------------------------------------
+   6. Hero Section
+   -------------------------------------------------------------------------- */
+.hero {
+  padding-top: 130px;
+  padding-bottom: 60px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 40px;
+  align-items: center;
+}
+
+.hero-badge-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: var(--radius-full);
+  font-size: 0.8rem;
+  font-weight: 600;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+}
+
+.hero-badge i {
+  color: var(--accent-amber);
+}
+
+.hero-title {
+  font-size: 3.2rem;
+  line-height: 1.15;
+  margin-bottom: 16px;
+  letter-spacing: -0.5px;
+}
+
+.hero-description {
+  font-size: 1.05rem;
+  color: var(--text-muted);
+  margin-bottom: 28px;
+}
+
+.hero-ctas {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 36px;
+}
+
+.hero-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-color);
+}
+
+.stat-number {
+  font-size: 1.75rem;
+  font-weight: 800;
+  font-family: var(--font-heading);
+  color: var(--primary);
+}
+
+.stat-label {
+  font-size: 0.8rem;
+  color: var(--text-subtle);
+  font-weight: 500;
+}
+
+.hero-image-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.hero-image-card {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+  border: 3px solid var(--bg-card-solid);
+}
+
+.hero-image-card img {
+  width: 100%;
+  object-fit: cover;
+}
+
+/* Floating Glass Cards on Hero Image */
+.floating-glass-card {
+  position: absolute;
+  padding: 10px 16px;
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+  border: 1px solid rgba(255,255,255,0.8);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 2;
+}
+
+[data-theme="dark"] .floating-glass-card {
+  background: rgba(17, 24, 39, 0.9);
+  border-color: rgba(255,255,255,0.15);
+}
+
+.card-top-left {
+  top: 20px;
+  left: -10px;
+}
+
+.card-bottom-right {
+  bottom: 20px;
+  right: -10px;
+}
+
+.glass-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  color: #FFFFFF;
+}
+
+.icon-teal { background: linear-gradient(135deg, var(--accent-teal), #0284C7); }
+.icon-amber { background: linear-gradient(135deg, var(--accent-amber), #D97706); }
+
+/* --------------------------------------------------------------------------
+   7. About Section (Interactive Tabbed View)
+   -------------------------------------------------------------------------- */
+.education-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.timeline-card {
+  padding: 18px 20px;
+  border-radius: var(--radius-md);
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  position: relative;
+  overflow: hidden;
+}
+
+.timeline-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: var(--primary);
+}
+
+.timeline-date {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--primary);
+  text-transform: uppercase;
+}
+
+.timeline-title {
+  font-size: 1.05rem;
+  margin: 2px 0;
+}
+
+.timeline-institution {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+/* --------------------------------------------------------------------------
+   8. Curriculum Section (Interactive Track Selector)
+   -------------------------------------------------------------------------- */
+.curriculum-card {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.curriculum-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  margin-bottom: 16px;
+  color: #FFFFFF;
+}
+
+.curriculum-topics {
+  margin: 16px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.curriculum-topics li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.curriculum-topics li i {
+  color: var(--accent-emerald);
+}
+
+.exam-strip {
+  margin-top: 36px;
+  padding: 20px;
+  border-radius: var(--radius-md);
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.exam-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: var(--radius-full);
+  background: var(--bg-card-solid);
+  border: 1px solid var(--border-color);
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+/* --------------------------------------------------------------------------
+   9. EdTech Methodology (Interactive Switcher)
+   -------------------------------------------------------------------------- */
+.edtech-interactive-wrapper {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  align-items: center;
+}
+
+.edtech-btn-card {
+  padding: 16px 20px;
+  border-radius: var(--radius-md);
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+  transition: var(--transition);
+  margin-bottom: 12px;
+}
+
+.edtech-btn-card:hover, .edtech-btn-card.active {
+  border-color: var(--primary);
+  background: var(--primary-light);
+}
+
+.edtech-btn-card.active .edtech-icon {
+  background: var(--primary);
+  color: #FFFFFF;
+}
+
+.edtech-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: var(--bg-main);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+/* --------------------------------------------------------------------------
+   10. Interactive Math Quiz Game Widget
+   -------------------------------------------------------------------------- */
+.quiz-wrapper {
+  max-width: 750px;
+  margin: 0 auto;
+  padding: 30px;
+  border-radius: var(--radius-lg);
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-lg);
+}
+
+.quiz-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.quiz-level-selector {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.quiz-level-btn {
+  padding: 8px 16px;
+  border-radius: var(--radius-full);
+  font-size: 0.8rem;
+  font-weight: 600;
+  background: var(--bg-main);
+  color: var(--text-muted);
+  border: 1px solid var(--border-color);
+}
+
+.quiz-level-btn.active {
+  background: var(--primary);
+  color: #FFFFFF;
+  border-color: var(--primary);
+}
+
+.quiz-progress-bar {
+  width: 100%;
+  height: 6px;
+  background: var(--border-color);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+
+.quiz-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary), var(--accent-coral));
+  width: 33%;
+  transition: width 0.3s ease;
+}
+
+.quiz-question-text {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.quiz-options-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.quiz-option-btn {
+  padding: 14px 16px;
+  border-radius: var(--radius-md);
+  background: var(--bg-card-solid);
+  border: 1.5px solid var(--border-color);
+  text-align: left;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.quiz-option-btn:hover {
+  border-color: var(--primary);
+  background: var(--primary-light);
+}
+
+.quiz-option-btn.correct {
+  background: #D1FAE5 !important;
+  border-color: #10B981 !important;
+  color: #065F46 !important;
+}
+
+.quiz-option-btn.wrong {
+  background: #FEE2E2 !important;
+  border-color: #EF4444 !important;
+  color: #991B1B !important;
+}
+
+.quiz-feedback {
+  margin-top: 18px;
+  padding: 14px 18px;
+  border-radius: var(--radius-md);
+  display: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.quiz-feedback.show {
+  display: block;
+}
+
+.quiz-result-view {
+  display: none;
+  text-align: center;
+  padding: 20px 10px;
+}
+
+.result-score-circle {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), var(--accent-purple));
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 18px;
+  font-size: 2rem;
+  font-weight: 800;
+}
+
+/* --------------------------------------------------------------------------
+   11. Interactive Fee Estimator
+   -------------------------------------------------------------------------- */
+.estimator-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  align-items: flex-start;
+}
+
+.estimator-controls {
+  padding: 28px;
+  border-radius: var(--radius-lg);
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+}
+
+.control-group {
+  margin-bottom: 20px;
+}
+
+.control-label {
+  display: block;
+  font-weight: 700;
+  font-size: 0.95rem;
+  margin-bottom: 8px;
+}
+
+.radio-pills-group {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.radio-pill {
+  position: relative;
+}
+
+.radio-pill input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.radio-pill-label {
+  display: inline-block;
+  padding: 8px 16px;
+  border-radius: var(--radius-full);
+  background: var(--bg-main);
+  border: 1px solid var(--border-color);
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.radio-pill input:checked + .radio-pill-label {
+  background: var(--primary);
+  color: #FFFFFF;
+  border-color: var(--primary);
+}
+
+.estimator-summary-card {
+  padding: 28px;
+  border-radius: var(--radius-lg);
+  background: var(--bg-card-solid);
+  border: 2px solid var(--primary-light);
+  box-shadow: var(--shadow-lg);
+}
+
+.summary-price-box {
+  margin: 18px 0;
+  padding: 16px;
+  border-radius: var(--radius-md);
+  background: var(--primary-light);
+  color: var(--primary-dark);
+  text-align: center;
+}
+
+.summary-price {
+  font-size: 2rem;
+  font-weight: 800;
+  font-family: var(--font-heading);
+}
+
+/* --------------------------------------------------------------------------
+   12. Contact Form & Footer
+   -------------------------------------------------------------------------- */
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 36px;
+}
+
+.contact-info-list {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-top: 24px;
+}
+
+.contact-info-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.info-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--primary-light);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.contact-form-card {
+  padding: 30px;
+  border-radius: var(--radius-lg);
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.form-label {
+  display: block;
+  font-weight: 600;
+  font-size: 0.85rem;
+  margin-bottom: 6px;
+}
+
+.form-input, .form-select, .form-textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  background: var(--bg-main);
+  border: 1.5px solid var(--border-color);
+  color: var(--text-main);
+  font-size: 0.9rem;
+}
+
+/* Floating WhatsApp Button */
+.floating-whatsapp {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  box-shadow: 0 8px 20px rgba(37, 211, 102, 0.4);
+  z-index: 99;
+}
+
+/* Footer */
+.footer {
+  background: var(--bg-card-solid);
+  border-top: 1px solid var(--border-color);
+  padding: 50px 0 24px;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1.5fr;
+  gap: 30px;
+  margin-bottom: 30px;
+}
+
+.footer-bottom {
+  padding-top: 20px;
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: var(--text-subtle);
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* --------------------------------------------------------------------------
+   13. STRICT RESPONSIVE BREAKPOINTS (Mobile & Tablet Fixes)
+   -------------------------------------------------------------------------- */
+@media (max-width: 992px) {
+  .section { padding: 60px 0; }
+  .hero { padding-top: 110px; }
+  .hero-grid, .edtech-interactive-wrapper, .estimator-grid, .contact-grid, .about-tab-grid, .curr-tab-inner {
+    grid-template-columns: 1fr !important;
+    gap: 24px;
+  }
+  
+  .hero-title { font-size: 2.6rem; }
+  .footer-grid { grid-template-columns: 1fr 1fr; gap: 24px; }
+  
+  /* Mobile Header Navigation Drawer */
+  .nav-links {
+    display: none;
+  }
+  
+  .mobile-toggle {
+    display: block;
+  }
+  
+  .nav-links.mobile-open {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 70px;
+    left: 0;
+    width: 100vw;
+    height: calc(100vh - 70px);
+    background: var(--bg-card-solid);
+    padding: 30px 24px;
+    gap: 20px;
+    z-index: 999;
+    box-shadow: var(--shadow-lg);
+    overflow-y: auto;
+  }
+  
+  .nav-links.mobile-open .nav-link {
+    font-size: 1.1rem;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border-color);
+  }
+}
+
+@media (max-width: 576px) {
+  .section { padding: 44px 0; }
+  .hero { padding-top: 90px; }
+  .container { width: 92%; }
+  
+  .hero-title { font-size: 1.95rem; }
+  .section-title { font-size: 1.55rem; }
+  .section-subtitle { font-size: 0.9rem; }
+  
+  /* Hide top CTA button in navbar on mobile to leave clean room for theme toggle & menu icon */
+  .nav-actions .btn {
+    display: none !important;
+  }
+  
+  .nav-actions {
+    gap: 8px;
+  }
+  
+  .logo {
+    font-size: 1.1rem;
+  }
+  
+  .logo-badge {
+    width: 34px;
+    height: 34px;
+    font-size: 0.95rem;
+  }
+  
+  /* Adjust Floating Glass Cards on Mobile Hero */
+  .floating-glass-card {
+    position: relative;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    margin-top: 10px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  .hero-stats {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    text-align: center;
+  }
+  
+  .stat-number { font-size: 1.3rem; }
+  .stat-label { font-size: 0.7rem; }
+  
+  .form-row-2 {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  .quiz-options-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .quiz-wrapper, .estimator-controls, .estimator-summary-card, .contact-form-card {
+    padding: 20px 16px;
+  }
+  
+  .footer-grid {
+    grid-template-columns: 1fr;
+  }
+}
