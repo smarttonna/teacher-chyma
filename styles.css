@@ -934,11 +934,17 @@ h1, h2, h3, h4, .font-heading {
 
 .summary-price-box {
   margin: 18px 0;
-  padding: 16px;
+  padding: 18px;
   border-radius: var(--radius-md);
-  background: var(--primary-light);
-  color: var(--primary-dark);
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  color: #FFFFFF;
   text-align: center;
+  box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
+}
+
+.summary-price-box span,
+.summary-price-box div {
+  color: #FFFFFF !important;
 }
 
 .summary-price {
