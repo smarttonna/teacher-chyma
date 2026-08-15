@@ -330,6 +330,10 @@ function initPlanEstimator() {
   const levelInputs = document.querySelectorAll('input[name="estLevel"]');
   const freqInputs = document.querySelectorAll('input[name="estFreq"]');
 
+  // Exact pricing matrix provided
+  const ONLINE_PRICING = { 1: 50000, 2: 75000, 3: 100000, 4: 125000 };
+  const OFFLINE_PRICING = { 1: 15000, 2: 30000, 3: 45000, 4: 60000 };
+
   function calculateEstimate() {
     let mode = 'online';
     let level = 'secondary';
@@ -340,14 +344,9 @@ function initPlanEstimator() {
     freqInputs.forEach(i => { if (i.checked) freq = parseInt(i.value); });
 
     const totalSessionsMonth = freq * 4;
-    let baseRateSession = 5500;
-
-    if (level === 'primary') baseRateSession = 4000;
-    else if (level === 'examprep') baseRateSession = 7500;
-
-    if (mode === 'offline') baseRateSession += 1500;
-
-    const estimatedMonthly = totalSessionsMonth * baseRateSession;
+    const estimatedMonthly = mode === 'online' 
+      ? (ONLINE_PRICING[freq] || 75000) 
+      : (OFFLINE_PRICING[freq] || 30000);
 
     document.getElementById('estSessionCount').innerText = `${totalSessionsMonth} Sessions/Month`;
     document.getElementById('estMonthlyPrice').innerText = `₦${estimatedMonthly.toLocaleString()}`;
@@ -356,12 +355,12 @@ function initPlanEstimator() {
     if (level === 'primary') levelLabel = 'Primary Math';
     if (level === 'examprep') levelLabel = 'Exam Prep (WAEC/IGCSE/SAT)';
 
-    let modeLabel = mode === 'online' ? 'Online' : 'In-Person (Anambra)';
+    let modeLabel = mode === 'online' ? 'Online Class' : 'Offline (Child comes to venue)';
     document.getElementById('estDetailsSummary').innerText = `${modeLabel} • ${levelLabel} • ${freq}x weekly`;
 
     const whatsappBtn = document.getElementById('estWhatsappBtn');
     if (whatsappBtn) {
-      const msg = encodeURIComponent(`Hello Teacher Chyma! I'd like to inquire about tutoring:\n- Mode: ${modeLabel}\n- Level: ${levelLabel}\n- Schedule: ${freq}x weekly (${totalSessionsMonth} sessions/month)\n- Estimated Tuition: ₦${estimatedMonthly.toLocaleString()}/month.\nCan we schedule a consultation?`);
+      const msg = encodeURIComponent(`Hello Teacher Chyma! I'd like to inquire about tutoring:\n- Mode: ${modeLabel}\n- Level: ${levelLabel}\n- Schedule: ${freq}x weekly (${totalSessionsMonth} sessions/month)\n- Tuition: ₦${estimatedMonthly.toLocaleString()}/month.\nCan we schedule a consultation?`);
       whatsappBtn.href = `https://wa.me/2349127245516?text=${msg}`;
     }
   }
