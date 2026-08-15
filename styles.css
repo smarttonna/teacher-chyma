@@ -904,41 +904,40 @@ h1, h2, h3, h4, .font-heading {
 }
 
 .estimator-controls {
-  padding: 28px;
+  padding: 24px;
   border-radius: var(--radius-lg);
   background: var(--bg-card);
   border: 1px solid var(--border-color);
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .control-group {
   margin-bottom: 20px;
+  width: 100%;
+  max-width: 100%;
 }
 
 .control-label {
   display: block;
   font-weight: 700;
   font-size: 0.95rem;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
 .radio-pills-group {
   display: flex;
-  gap: 10px;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  scroll-snap-type: x mandatory;
-  scrollbar-width: none;
-  padding-bottom: 4px;
-}
-
-.radio-pills-group::-webkit-scrollbar {
-  display: none;
+  gap: 8px;
+  flex-wrap: wrap;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .radio-pill {
   position: relative;
-  flex-shrink: 0;
-  scroll-snap-align: start;
+  max-width: 100%;
 }
 
 .radio-pill input {
@@ -948,15 +947,18 @@ h1, h2, h3, h4, .font-heading {
 }
 
 .radio-pill-label {
-  display: inline-block;
-  padding: 10px 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
   border-radius: var(--radius-full);
   background: var(--bg-main);
   border: 1px solid var(--border-color);
   font-weight: 600;
   font-size: 0.85rem;
   cursor: pointer;
-  white-space: nowrap;
+  white-space: normal;
+  text-align: center;
   transition: var(--transition);
 }
 
