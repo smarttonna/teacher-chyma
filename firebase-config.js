@@ -150,11 +150,23 @@ export const QuizService = {
         const snapshot = await getDocs(queryRef);
         let list = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         if (list.length > 0) return list;
+
+        // Auto-seed if database is empty on first load
+        const totalDocs = await getDocs(qRef);
+        if (totalDocs.empty) {
+          console.log("Database empty on load. Auto-populating 404 DOCX questions...");
+          await QuizService.seed200Quizzes();
+          return QuizService.getQuizzes(level, topic);
+        }
       } catch (err) {
         console.warn("Firestore quiz fetch notice, using local cache:", err);
       }
     }
     let all = getLocalQuizzes();
+    if (!all || all.length === 0) {
+      saveLocalQuizzes(SAMPLE_200_QUIZZES);
+      all = SAMPLE_200_QUIZZES;
+    }
     if (level !== "all") all = all.filter(item => item.level === level);
     if (topic !== "all") all = all.filter(item => item.topic === topic);
     return all;

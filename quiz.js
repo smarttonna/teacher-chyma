@@ -452,19 +452,19 @@ function setupTeacherAdminPanels() {
   const seedBtn = document.getElementById("seed200Btn");
   if (seedBtn) {
     seedBtn.addEventListener("click", async () => {
-      if (confirm("Delete all existing questions and load 404 questions from DOCX files (Fractions & Factors/LCM/HCF)?")) {
+      if (confirm("Reset and restore all 404 DOCX questions into your database (Fractions & Factors/LCM/HCF)?")) {
         seedBtn.disabled = true;
-        seedBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Uploading 404 DOCX Questions...`;
+        seedBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Restoring 404 Questions...`;
         try {
           await QuizService.seed200Quizzes();
-          alert("🎉 404 DOCX Questions (Fractions & Factors/LCM/HCF) uploaded successfully!");
+          alert("🎉 404 DOCX Questions restored successfully!");
           refreshTeacherQuestionBank();
-          loadStudentQuiz(currentStudentLevel);
+          loadStudentQuiz(currentStudentLevel, currentStudentTopic);
         } catch (err) {
           alert("Notice: " + err.message);
         } finally {
           seedBtn.disabled = false;
-          seedBtn.innerHTML = `<i class="fas fa-file-word"></i> Load 404 DOCX Questions (Fractions & Factors)`;
+          seedBtn.innerHTML = `<i class="fas fa-sync-alt"></i> Reset & Restore 404 DOCX Questions`;
         }
       }
     });
