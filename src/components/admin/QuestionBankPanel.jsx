@@ -4,11 +4,9 @@ import {
   Trash2, 
   Edit3, 
   Database, 
-  RefreshCw, 
-  CheckSquare, 
-  Square,
-  Sparkles,
-  AlertTriangle
+  AlertTriangle,
+  Lock,
+  X
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { QuizService } from '../../services/quizService';
@@ -21,6 +19,10 @@ export default function QuestionBankPanel({ quizzes, onRefresh }) {
   const [selectedIds, setSelectedIds] = useState([]);
   const [editingQuiz, setEditingQuiz] = useState(null);
   const [loadingAction, setLoadingAction] = useState(false);
+
+  // Wipe All Password Modal State
+  const [showWipeModal, setShowWipeModal] = useState(false);
+  const [wipePasscode, setWipePasscode] = useState('');
 
   const filteredQuizzes = quizzes.filter(q => {
     const matchesSearch = (q.question || '').toLowerCase().includes(searchTerm.toLowerCase());
@@ -60,26 +62,26 @@ export default function QuestionBankPanel({ quizzes, onRefresh }) {
     }
   };
 
-  const handleSeed404 = async () => {
-    if (!window.confirm('Wipe current question database and seed all 404 parsed DOCX questions?')) return;
-    setLoadingAction(true);
-    try {
-      await QuizService.seed200Quizzes();
-      toast.success('Successfully seeded 404 DOCX Mathematics Questions!');
-      onRefresh();
-    } catch (err) {
-      toast.error('Failed to seed questions.');
-    } finally {
-      setLoadingAction(false);
+  const handleConfirmWipeAll = async (e) => {
+    e.preventDefault();
+    if (!wipePasscode.trim()) {
+      toast.error('Please enter admin passcode.');
+      return;
     }
-  };
 
-  const handleWipeAll = async () => {
-    if (!window.confirm('CAUTION: Wipe ALL questions from database? This action cannot be undone!')) return;
+    const input = wipePasscode.trim().toLowerCase();
+    if (input !== 'chyma2026') {
+      toast.error('Incorrect admin passcode! Wipe cancelled.');
+      return;
+    }
+
     setLoadingAction(true);
     try {
       await QuizService.deleteAllQuizzes();
-      toast.success('Question database wiped clean.');
+      toast.success('All questions wiped clean successfully.');
+      setShowWipeModal(false);
+      setWipePasscode('');
+      setSelectedIds([]);
       onRefresh();
     } catch (err) {
       toast.error('Failed to wipe questions.');
@@ -122,25 +124,17 @@ export default function QuestionBankPanel({ quizzes, onRefresh }) {
             <Database className="w-6 h-6 text-indigo-600" /> Question Directory ({filteredQuizzes.length})
           </h3>
           <p className="text-xs text-[var(--text-muted)]">
-            Manage published questions, batch delete selected MCQs, or seed 404 DOCX exam questions.
+            Manage published questions, edit MCQs, or perform batch selection.
           </p>
         </div>
 
         <div className="flex items-center gap-2 flex-wrap">
           <button
-            onClick={handleSeed404}
+            onClick={() => setShowWipeModal(true)}
             disabled={loadingAction}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:opacity-90 shadow-md"
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-red-600 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/40 hover:bg-red-100 transition-colors shadow-sm"
           >
-            <Sparkles className="w-4 h-4" /> Seed 404 DOCX Questions
-          </button>
-
-          <button
-            onClick={handleWipeAll}
-            disabled={loadingAction}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold text-red-600 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/40 hover:bg-red-100"
-          >
-            <AlertTriangle className="w-4 h-4" /> Wipe All
+            <AlertTriangle className="w-4 h-4" /> Wipe All Questions
           </button>
         </div>
       </div>
@@ -164,8 +158,8 @@ export default function QuestionBankPanel({ quizzes, onRefresh }) {
           className="px-3 py-2 rounded-xl bg-[var(--bg-main)] border border-[var(--border-color)] text-xs text-[var(--text-main)]"
         >
           <option value="all">🌐 All Topics</option>
-          <option value="Fractions">🍕 Fractions (204 Qs)</option>
-          <option value="Factors, Multiples, LCM & HCF">🔢 Factors, Multiples, LCM & HCF (200 Qs)</option>
+          <option value="Fractions">🍕 Fractions</option>
+          <option value="Factors, Multiples, LCM & HCF">🔢 Factors, Multiples, LCM & HCF</option>
           <option value="Algebra">🧮 Algebra & Equations</option>
           <option value="Geometry">📐 Geometry & Shapes</option>
           <option value="Trigonometry">📐 Trigonometry & Angles</option>
@@ -215,7 +209,7 @@ export default function QuestionBankPanel({ quizzes, onRefresh }) {
       <div className="space-y-3">
         {filteredQuizzes.length === 0 ? (
           <div className="p-8 text-center text-xs text-[var(--text-muted)] bg-[var(--bg-card)] rounded-2xl border border-[var(--border-color)]">
-            No questions found.
+            No questions found in directory. Use "Create Question" tab to add new questions!
           </div>
         ) : (
           filteredQuizzes.map((q, idx) => {
@@ -304,6 +298,59 @@ export default function QuestionBankPanel({ quizzes, onRefresh }) {
           })
         )}
       </div>
+
+      {/* Password Protection Wipe All Confirmation Modal */}
+      {showWipeModal && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-[var(--bg-card-solid)] border border-[var(--border-color)] p-6 sm:p-8 rounded-3xl max-w-md w-full shadow-2xl space-y-6">
+            <div className="flex items-center justify-between border-b border-[var(--border-color)] pb-3">
+              <div className="flex items-center gap-2 text-red-600 font-bold text-lg">
+                <AlertTriangle className="w-5 h-5" /> Password Required to Wipe All
+              </div>
+              <button onClick={() => setShowWipeModal(false)} className="text-xl font-bold text-[var(--text-muted)]">&times;</button>
+            </div>
+
+            <p className="text-xs text-[var(--text-muted)] leading-relaxed">
+              <strong>CAUTION</strong>: Wiping all questions will completely clear the question directory from Cloud Firestore and LocalStorage. Enter your Educator Passcode to confirm.
+            </p>
+
+            <form onSubmit={handleConfirmWipeAll} className="space-y-4">
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-[var(--text-main)]">Educator Passcode *</label>
+                <div className="relative">
+                  <input
+                    type="password"
+                    required
+                    placeholder="Enter admin passcode"
+                    value={wipePasscode}
+                    onChange={(e) => setWipePasscode(e.target.value)}
+                    className="w-full px-4 py-3 pr-10 rounded-xl bg-[var(--bg-main)] border border-[var(--border-color)] text-xs text-[var(--text-main)] focus:outline-none focus:border-red-600"
+                  />
+                  <Lock className="w-4 h-4 absolute right-3 top-3.5 text-[var(--text-muted)]" />
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => setShowWipeModal(false)}
+                  className="flex-1 py-3 rounded-xl text-xs font-bold text-[var(--text-main)] bg-[var(--bg-main)] border border-[var(--border-color)]"
+                >
+                  Cancel
+                </button>
+
+                <button
+                  type="submit"
+                  disabled={loadingAction}
+                  className="flex-1 py-3 rounded-xl text-xs font-bold text-white bg-red-600 hover:bg-red-700 shadow-lg shadow-red-600/30"
+                >
+                  {loadingAction ? 'Wiping...' : 'Confirm Wipe All'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* Edit Question Dialog */}
       {editingQuiz && (

@@ -46,11 +46,10 @@ const SEED_STUDENTS = [
 function getLocalQuizzes() {
   const data = localStorage.getItem("chyma_quiz_items");
   if (!data) {
-    const seedData = (SAMPLE_200_QUIZZES && SAMPLE_200_QUIZZES.length > 0) ? SAMPLE_200_QUIZZES : [];
-    localStorage.setItem("chyma_quiz_items", JSON.stringify(seedData));
-    return seedData;
+    localStorage.setItem("chyma_quiz_items", JSON.stringify([]));
+    return [];
   }
-  try { return JSON.parse(data); } catch (e) { return SAMPLE_200_QUIZZES || []; }
+  try { return JSON.parse(data); } catch (e) { return []; }
 }
 
 function saveLocalQuizzes(items) {
