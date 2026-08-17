@@ -138,11 +138,15 @@ export const QuizService = {
     localStorage.removeItem("chyma_teacher_logged_in");
   },
 
-  async getQuizzes(level = "all") {
+  async getQuizzes(level = "all", topic = "all") {
     if (isFirebaseConfigured && db) {
       try {
         const qRef = collection(db, "quizzes");
-        const queryRef = level === "all" ? qRef : query(qRef, where("level", "==", level));
+        let constraints = [];
+        if (level !== "all") constraints.push(where("level", "==", level));
+        if (topic !== "all") constraints.push(where("topic", "==", topic));
+
+        const queryRef = constraints.length > 0 ? query(qRef, ...constraints) : qRef;
         const snapshot = await getDocs(queryRef);
         let list = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         if (list.length > 0) return list;
@@ -150,8 +154,10 @@ export const QuizService = {
         console.warn("Firestore quiz fetch notice, using local cache:", err);
       }
     }
-    const all = getLocalQuizzes();
-    return level === "all" ? all : all.filter(item => item.level === level);
+    let all = getLocalQuizzes();
+    if (level !== "all") all = all.filter(item => item.level === level);
+    if (topic !== "all") all = all.filter(item => item.topic === topic);
+    return all;
   },
 
   // Wipe old questions and seed all 404 DOCX MCQs to Firestore & LocalStorage

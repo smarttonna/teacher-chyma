@@ -159,10 +159,11 @@ function setupStudentNameFlow() {
   }
 }
 
-// STUDENT LEVEL SELECTION PROMPT MODAL
+// STUDENT LEVEL & TOPIC SELECTION PROMPT MODAL
 function setupStudentLevelModal() {
   const levelModal = document.getElementById("studentLevelModal");
   const openBtn = document.getElementById("openLevelModalBtn");
+  const closeBtn = document.getElementById("closeStudentLevelModalBtn");
 
   if (!levelModal) return;
 
@@ -182,26 +183,36 @@ function setupStudentLevelModal() {
     });
   }
 
+  if (closeBtn) {
+    closeBtn.addEventListener("click", () => {
+      if (levelModal.close) levelModal.close();
+      else levelModal.style.display = "none";
+    });
+  }
+
   const selectBtns = levelModal.querySelectorAll(".modal-level-select-btn");
   selectBtns.forEach(btn => {
     btn.addEventListener("click", () => {
-      const level = btn.dataset.level || "sss";
-      sessionStorage.setItem("chyma_level_chosen", level);
-      currentStudentLevel = level;
+      selectBtns.forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      currentStudentLevel = btn.dataset.level || "sss";
+    });
+  });
 
-      // Update level tab UI
-      const levelBtns = document.querySelectorAll(".student-level-btn");
-      levelBtns.forEach(b => {
-        if (b.dataset.level === level) b.classList.add("active");
-        else b.classList.remove("active");
-      });
+  const confirmBtn = document.getElementById("confirmLevelTopicBtn");
+  const topicSelect = document.getElementById("selectQuizTopic");
+
+  if (confirmBtn) {
+    confirmBtn.addEventListener("click", () => {
+      if (topicSelect) currentStudentTopic = topicSelect.value || "all";
+      sessionStorage.setItem("chyma_level_chosen", currentStudentLevel);
 
       if (levelModal.close) levelModal.close();
       else levelModal.style.display = "none";
 
-      loadStudentQuiz(level);
+      loadStudentQuiz(currentStudentLevel, currentStudentTopic);
     });
-  });
+  }
 }
 
 // ----------------------------------------------------------------------------
@@ -996,11 +1007,17 @@ function setupStudentLevelSelector() {
   }
 }
 
-async function loadStudentQuiz(level) {
+async function loadStudentQuiz(level = currentStudentLevel, topic = currentStudentTopic) {
+  currentStudentLevel = level;
+  currentStudentTopic = topic;
+
   const activeNameEl = document.getElementById("activeLevelName");
   if (activeNameEl) activeNameEl.textContent = getLevelLabel(level);
 
-  const rawQuestions = await QuizService.getQuizzes(level);
+  const activeTopicEl = document.getElementById("activeTopicName");
+  if (activeTopicEl) activeTopicEl.textContent = topic === "all" ? "All Topics" : topic;
+
+  const rawQuestions = await QuizService.getQuizzes(level, topic);
   
   // Anti-Cheating Step 1: Dynamically Shuffle Question Sequence on Every Load / Retake
   studentQuestions = shuffleArray(rawQuestions);
@@ -1023,11 +1040,12 @@ function renderStudentQuestion() {
   if (!playView) return;
 
   if (!studentQuestions || studentQuestions.length === 0) {
+    const topicLabel = currentStudentTopic === "all" ? "" : ` (${currentStudentTopic})`;
     playView.innerHTML = `
       <div class="qna-empty-state" style="padding: 40px 20px;">
         <i class="fas fa-graduation-cap qna-empty-icon"></i>
-        <h3>No Questions for ${getLevelLabel(currentStudentLevel)}</h3>
-        <p>Teacher Chyma has not added questions for this level yet.</p>
+        <h3>No Questions for ${getLevelLabel(currentStudentLevel)}${escapeHTML(topicLabel)}</h3>
+        <p>Teacher Chyma has not added questions for this level and topic combination yet. Try selecting <strong>"All Topics"</strong> or choosing a different grade level!</p>
       </div>
     `;
     return;
