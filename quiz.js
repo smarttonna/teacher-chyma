@@ -34,24 +34,7 @@ function initQuizPage() {
 function renderFirebaseStatusNotice() {
   const box = document.getElementById("firebaseNoticeBox");
   if (!box) return;
-  if (!isFirebaseConfigured) {
-    box.innerHTML = `
-      <div class="qna-alert qna-alert-info">
-        <i class="fas fa-info-circle"></i>
-        <div>
-          <strong>Local Storage Active:</strong> Data is saved locally in browser storage. 
-          To enable live cloud sync across all devices, paste your free Firebase credentials in <code>firebase-config.js</code>.
-        </div>
-      </div>
-    `;
-  } else {
-    box.innerHTML = `
-      <div class="qna-alert qna-alert-success">
-        <i class="fas fa-cloud-check"></i>
-        <div><strong>Firebase Cloud Sync Active:</strong> Live connected to Cloud Firestore (teacherchyma-db300)!</div>
-      </div>
-    `;
-  }
+  box.innerHTML = "";
 }
 
 // ----------------------------------------------------------------------------
