@@ -997,6 +997,9 @@ function setupStudentLevelSelector() {
 }
 
 async function loadStudentQuiz(level) {
+  const activeNameEl = document.getElementById("activeLevelName");
+  if (activeNameEl) activeNameEl.textContent = getLevelLabel(level);
+
   const rawQuestions = await QuizService.getQuizzes(level);
   
   // Anti-Cheating Step 1: Dynamically Shuffle Question Sequence on Every Load / Retake
