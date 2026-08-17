@@ -26,6 +26,7 @@ function initQuizPage() {
   setupStudentNameFlow();
   setupTeacherAuth();
   setupTeacherAdminPanels();
+  setupMobileSidebarDrawer();
   setupLiveMcqPreview();
   setupStudentLevelSelector();
 
@@ -54,6 +55,42 @@ function setupPasswordToggle() {
       toggleIcon.className = isPassword ? "fas fa-eye-slash" : "fas fa-eye";
     });
   }
+}
+
+// ----------------------------------------------------------------------------
+// MOBILE SIDEBAR OFF-CANVAS DRAWER
+// ----------------------------------------------------------------------------
+function setupMobileSidebarDrawer() {
+  const openBtn = document.getElementById("openAdminSidebarBtn");
+  const closeBtn = document.getElementById("closeAdminSidebarBtn");
+  const sidebar = document.getElementById("adminSidebar");
+  const backdrop = document.getElementById("sidebarBackdrop");
+
+  if (!sidebar) return;
+
+  function openDrawer() {
+    sidebar.classList.add("mobile-open");
+    if (backdrop) backdrop.classList.add("show");
+  }
+
+  function closeDrawer() {
+    sidebar.classList.remove("mobile-open");
+    if (backdrop) backdrop.classList.remove("show");
+  }
+
+  if (openBtn) openBtn.addEventListener("click", openDrawer);
+  if (closeBtn) closeBtn.addEventListener("click", closeDrawer);
+  if (backdrop) backdrop.addEventListener("click", closeDrawer);
+
+  // Close drawer on nav item click on mobile
+  const navBtns = sidebar.querySelectorAll(".sidebar-nav-btn");
+  navBtns.forEach(btn => {
+    btn.addEventListener("click", () => {
+      if (window.innerWidth <= 992) {
+        closeDrawer();
+      }
+    });
+  });
 }
 
 // ----------------------------------------------------------------------------
@@ -333,6 +370,28 @@ function setupTeacherAdminPanels() {
   if (refreshSubBtn) {
     refreshSubBtn.addEventListener("click", () => {
       refreshTeacherSubmissionsTable();
+    });
+  }
+
+  // Seed 200 Questions Button
+  const seedBtn = document.getElementById("seed200Btn");
+  if (seedBtn) {
+    seedBtn.addEventListener("click", async () => {
+      if (confirm("Load 200 Sample MCQs across 20 Mathematics topics into your Question Bank?")) {
+        seedBtn.disabled = true;
+        seedBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Seeding 200 Questions...`;
+        try {
+          await QuizService.seed200Quizzes();
+          alert("🎉 200 Mathematics Questions (20 Topics × 10 Questions) loaded successfully!");
+          refreshTeacherQuestionBank();
+          loadStudentQuiz(currentStudentLevel);
+        } catch (err) {
+          alert("Notice: " + err.message);
+        } finally {
+          seedBtn.disabled = false;
+          seedBtn.innerHTML = `<i class="fas fa-cloud-download-alt"></i> Load 200 Questions (20 Topics)`;
+        }
+      }
     });
   }
 

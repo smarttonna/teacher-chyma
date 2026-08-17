@@ -6,7 +6,7 @@
   <title>Teacher Admin System | Teacher Chyma - Mathematics Educator</title>
 
   <!-- SEO Meta Tags -->
-  <meta name="description" content="Official Teacher Administration System for Teacher Chyma. Manage quiz question banks, create level-based MCQs, register students, and view live student trial results.">
+  <meta name="description" content="Official Teacher Administration System for Teacher Chyma. Manage 200+ level-based math questions across 20 topics, register student accounts, and view live trial results.">
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -28,6 +28,9 @@
     <div class="math-symbol" style="top: 55%; left: 4%; font-size: 3.5rem; animation-delay: -4s;">∑</div>
     <div class="math-symbol" style="top: 70%; right: 6%; font-size: 3rem; animation-delay: -1s;">Δ</div>
   </div>
+
+  <!-- Mobile Sidebar Backdrop Overlay -->
+  <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
 
   <!-- ------------------------------------------------------------------------
        HEADER & NAVIGATION BAR
@@ -78,7 +81,7 @@
             Teacher Admin <span class="gradient-text">System</span>
           </h2>
           <p class="section-subtitle">
-            Manage your quiz questions, register student accounts, and monitor student trial results in real time.
+            Manage your 200+ quiz questions across 20 topics, register student accounts, and monitor student trial results in real time.
           </p>
         </div>
 
@@ -110,13 +113,13 @@
         </div>
       </div>
 
-      <!-- LOGGED IN VIEW: Full Admin System with Sidebar Navigation Layout -->
+      <!-- LOGGED IN VIEW: Full Admin System with Off-Canvas Mobile Side Navigation Layout -->
       <div id="teacherLoggedInView" style="display: none; margin-bottom: 40px;">
         
         <div class="admin-layout">
 
-          <!-- LEFT SIDEBAR NAVIGATION PANEL -->
-          <aside class="admin-sidebar">
+          <!-- LEFT OFF-CANVAS SIDEBAR NAVIGATION PANEL -->
+          <aside class="admin-sidebar" id="adminSidebar">
             <div>
               <div class="sidebar-header">
                 <div class="sidebar-title">
@@ -126,6 +129,9 @@
                     <div style="font-size: 0.75rem; color: var(--accent-emerald); font-weight: 600;">● Admin Online</div>
                   </div>
                 </div>
+
+                <!-- Close Side Drawer Button on Mobile -->
+                <button class="qna-modal-close" id="closeAdminSidebarBtn" aria-label="Close sidebar menu" style="font-size: 1.4rem;">&times;</button>
               </div>
 
               <!-- Sidebar Vertical Navigation Menu -->
@@ -165,6 +171,17 @@
 
           <!-- RIGHT MAIN DASHBOARD CONTENT AREA -->
           <main class="admin-main-content">
+
+            <!-- MOBILE ADMIN TOP MENU BAR BUTTON -->
+            <div class="mobile-admin-menu-bar">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <i class="fas fa-sliders" style="color: var(--primary);"></i>
+                <span style="font-weight: 700; font-size: 0.95rem;">Admin Panel Navigation</span>
+              </div>
+              <button class="btn btn-primary btn-sm" id="openAdminSidebarBtn">
+                <i class="fas fa-bars"></i> Admin Menu
+              </button>
+            </div>
 
             <!-- KPI METRICS GRID -->
             <div class="kpi-grid">
@@ -448,7 +465,13 @@
                   <i class="fas fa-search"></i>
                   <input type="text" id="bankSearchInput" class="form-input" placeholder="Search questions..." />
                 </div>
-                <span id="adminQuestionCount" class="qna-badge qna-badge-solved">0 Questions</span>
+                
+                <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                  <button class="btn btn-outline btn-sm" id="seed200Btn">
+                    <i class="fas fa-cloud-download-alt"></i> Load 200 Questions (20 Topics)
+                  </button>
+                  <span id="adminQuestionCount" class="qna-badge qna-badge-solved">0 Questions</span>
+                </div>
               </div>
 
               <div class="admin-level-tabs" style="margin-bottom: 20px;">

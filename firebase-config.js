@@ -10,6 +10,8 @@ import {
   query, where, serverTimestamp 
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+import { SAMPLE_200_QUIZZES } from "./questions-data.js";
+
 // Your Actual Live Firebase Credentials (TeacherChyma project)
 const firebaseConfig = {
   apiKey: "AIzaSyBdVwnFW3mKYXGjVpQEuLKagIpIjRKY03A",
@@ -37,63 +39,7 @@ if (isFirebaseConfigured) {
   }
 }
 
-// ----------------------------------------------------------------------------
-// SEED DATA: Default Quizzes
-// ----------------------------------------------------------------------------
-const SEED_QUIZZES = [
-  {
-    id: "seed_p1",
-    level: "primary",
-    question: "What is 15 + (4 × 3)?",
-    options: ["57", "27", "32", "24"],
-    correctIndex: 1,
-    explanation: "Follow BODMAS: Multiply first (4 × 3 = 12), then add (15 + 12 = 27)."
-  },
-  {
-    id: "seed_p2",
-    level: "primary",
-    question: "A rectangle has length 8 cm and width 5 cm. What is its perimeter?",
-    options: ["40 cm", "26 cm", "13 cm", "30 cm"],
-    correctIndex: 1,
-    explanation: "Perimeter = 2 × (8 + 5) = 26 cm."
-  },
-  {
-    id: "seed_j1",
-    level: "jss",
-    question: "Solve for x: 4x - 7 = 17",
-    options: ["x = 4", "x = 6", "x = 8", "x = 5"],
-    correctIndex: 1,
-    explanation: "Add 7: 4x = 24. Divide by 4: x = 6."
-  },
-  {
-    id: "seed_s1",
-    level: "sss",
-    question: "Evaluate log₁₀(1000) + log₁₀(0.01)",
-    options: ["1", "2", "3", "5"],
-    correctIndex: 0,
-    explanation: "log₁₀(1000) = 3 and log₁₀(0.01) = -2. So 3 + (-2) = 1."
-  },
-  {
-    id: "seed_w1",
-    level: "waec",
-    question: "Find the roots of 2x² - 5x + 2 = 0",
-    options: ["x = 2 or x = 1/2", "x = -2 or x = -1/2", "x = 4 or x = 1", "x = 3"],
-    correctIndex: 0,
-    explanation: "Factorize: (2x - 1)(x - 2) = 0. So x = 1/2 or x = 2."
-  },
-  {
-    id: "seed_sat1",
-    level: "sat_igcse",
-    question: "If sin(A) = 3/5 in right triangle ABC, what is cos(B)?",
-    options: ["3/5", "4/5", "5/3", "4/3"],
-    correctIndex: 0,
-    explanation: "Complementary angle rule: cos(B) = sin(90° - B) = sin(A) = 3/5."
-  }
-];
-
-// ----------------------------------------------------------------------------
-// SEED DATA: Default Student Submissions with Detailed Passed/Failed Breakdown
-// ----------------------------------------------------------------------------
+// Default Seed Submissions
 const SEED_SUBMISSIONS = [
   {
     id: "sub_1",
@@ -124,9 +70,7 @@ const SEED_SUBMISSIONS = [
   }
 ];
 
-// ----------------------------------------------------------------------------
-// SEED DATA: Registered Students Roster
-// ----------------------------------------------------------------------------
+// Registered Students Roster
 const SEED_STUDENTS = [
   { id: "std_1", name: "Chinedu Okeke", email: "chinedu@student.com", level: "waec", pin: "1234", createdAt: new Date().toISOString() },
   { id: "std_2", name: "Grace Eze", email: "grace@student.com", level: "sss", pin: "5678", createdAt: new Date().toISOString() },
@@ -136,10 +80,10 @@ const SEED_STUDENTS = [
 function getLocalQuizzes() {
   const data = localStorage.getItem("chyma_quiz_items");
   if (!data) {
-    localStorage.setItem("chyma_quiz_items", JSON.stringify(SEED_QUIZZES));
-    return SEED_QUIZZES;
+    localStorage.setItem("chyma_quiz_items", JSON.stringify(SAMPLE_200_QUIZZES));
+    return SAMPLE_200_QUIZZES;
   }
-  try { return JSON.parse(data); } catch (e) { return SEED_QUIZZES; }
+  try { return JSON.parse(data); } catch (e) { return SAMPLE_200_QUIZZES; }
 }
 
 function saveLocalQuizzes(items) {
@@ -208,6 +152,29 @@ export const QuizService = {
     }
     const all = getLocalQuizzes();
     return level === "all" ? all : all.filter(item => item.level === level);
+  },
+
+  // Seed all 200 MCQs to Firestore or LocalStorage
+  async seed200Quizzes() {
+    if (isFirebaseConfigured && db) {
+      try {
+        for (const q of SAMPLE_200_QUIZZES) {
+          await addDoc(collection(db, "quizzes"), {
+            level: q.level,
+            question: q.question,
+            options: q.options,
+            correctIndex: q.correctIndex,
+            explanation: q.explanation || "",
+            createdAt: serverTimestamp()
+          });
+        }
+        return true;
+      } catch (err) {
+        console.warn("Firestore seeding notice, saving locally:", err);
+      }
+    }
+    saveLocalQuizzes(SAMPLE_200_QUIZZES);
+    return true;
   },
 
   async createQuiz({ level, question, options, correctIndex, explanation }) {
@@ -336,7 +303,6 @@ export const QuizService = {
     return localList;
   },
 
-  // REGISTER STUDENT ACCOUNT SERVICES
   async saveStudentAccount({ name, email, level, pin }) {
     const studentData = {
       name,
