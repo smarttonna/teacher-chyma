@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { 
   GraduationCap, 
   SlidersHorizontal, 
@@ -11,11 +11,48 @@ import {
   Sparkles,
   Clock,
   ChevronRight,
-  BookOpen
+  BookOpen,
+  CheckCircle2
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import confetti from 'canvas-confetti';
 import { QuizService } from '../../services/quizService';
+
+const LEVEL_TOPICS_MAP = {
+  primary: [
+    "Fractions",
+    "Factors, Multiples, LCM & HCF",
+    "Basic Arithmetic & Word Problems",
+    "Geometry & Perimeter"
+  ],
+  jss: [
+    "Fractions",
+    "Factors, Multiples, LCM & HCF",
+    "Algebraic Expressions",
+    "Plane Geometry & Angles",
+    "Percentages, Ratio & Proportion"
+  ],
+  sss: [
+    "Fractions",
+    "Factors, Multiples, LCM & HCF",
+    "Quadratic & Simultaneous Equations",
+    "Logarithms & Indices",
+    "Trigonometry & Circle Theorems",
+    "Calculus"
+  ],
+  waec: [
+    "Past Question Objectives & Theory",
+    "Algebra & Equations",
+    "Trigonometry & Geometry",
+    "Statistics & Probability"
+  ],
+  sat_igcse: [
+    "Heart of Algebra",
+    "Passport to Advanced Math",
+    "Problem Solving & Data Analysis",
+    "IGCSE Extended Mathematics"
+  ]
+};
 
 export default function QuizPlayer() {
   const [studentName, setStudentName] = useState(() => localStorage.getItem('chyma_student_name') || 'Guest Student');
@@ -34,28 +71,33 @@ export default function QuizPlayer() {
   const [score, setScore] = useState(0);
   const [timerSeconds, setTimerSeconds] = useState(0);
 
+  // Available topics for currently selected level
+  const availableTopics = useMemo(() => {
+    return LEVEL_TOPICS_MAP[selectedLevel] || ["Fractions", "Factors, Multiples, LCM & HCF"];
+  }, [selectedLevel]);
+
   // Fetch questions from Firestore / local storage
   const fetchQuestions = async (lvl, tpc) => {
     setLoadingQuizzes(true);
     try {
       let data = await QuizService.getQuizzes(lvl, tpc);
       if (!data || data.length === 0) {
-        // Fallback default sample questions if empty
+        // Sample fallback questions if collection is empty
         data = [
           {
-            id: 'sample_1',
+            id: `sample_1_${lvl}`,
             level: lvl,
-            topic: 'Algebra',
-            question: 'Solve for x: 4x - 7 = 17',
-            options: ['x = 5', 'x = 6', 'x = 7', 'x = 8'],
+            topic: tpc !== 'all' ? tpc : 'Mathematics',
+            question: `[${lvl.toUpperCase()} Practice] Evaluate: 3x - 7 = 14`,
+            options: ['x = 5', 'x = 7', 'x = 6', 'x = 8'],
             correctIndex: 1,
-            explanation: '4x = 24 -> x = 6.'
+            explanation: '3x = 21 -> x = 7.'
           },
           {
-            id: 'sample_2',
+            id: `sample_2_${lvl}`,
             level: lvl,
-            topic: 'Fractions',
-            question: 'Evaluate 3/5 + 1/4',
+            topic: tpc !== 'all' ? tpc : 'Mathematics',
+            question: `[${lvl.toUpperCase()} Practice] Evaluate 3/5 + 1/4`,
             options: ['17/20', '4/9', '7/20', '3/20'],
             correctIndex: 0,
             explanation: 'LCM of 5 and 4 is 20. (12 + 5)/20 = 17/20.'
@@ -81,6 +123,12 @@ export default function QuizPlayer() {
   useEffect(() => {
     fetchQuestions(selectedLevel, selectedTopic);
   }, []);
+
+  // Handle grade level selection in modal -> automatically update available topics
+  const handleLevelChange = (lvlId) => {
+    setSelectedLevel(lvlId);
+    setSelectedTopic('all'); // default to all topics for selected grade
+  };
 
   // Quiz timer
   useEffect(() => {
@@ -190,27 +238,29 @@ export default function QuizPlayer() {
           </button>
         </div>
 
-        {/* Level Banner */}
+        {/* Level & Active Topic Banner */}
         <div className="flex flex-wrap items-center justify-between gap-4 p-4 rounded-2xl bg-indigo-50/60 dark:bg-indigo-950/30 border border-indigo-100 dark:border-indigo-900/40">
           <div className="flex items-center gap-3 flex-wrap">
             <div className="flex items-center gap-1.5 text-xs">
-              <span className="text-[var(--text-muted)]">Level:</span>
+              <span className="text-[var(--text-muted)]">Grade Level:</span>
               <strong className="text-indigo-600 font-bold uppercase">{selectedLevel}</strong>
             </div>
 
             <span className="text-[var(--border-color)]">|</span>
 
             <div className="flex items-center gap-1.5 text-xs">
-              <span className="text-[var(--text-muted)]">Topic:</span>
-              <strong className="text-emerald-600 font-bold">{selectedTopic}</strong>
+              <span className="text-[var(--text-muted)]">Topic Filter:</span>
+              <strong className="text-emerald-600 font-bold">
+                {selectedTopic === 'all' ? '🌐 All Related Topics' : selectedTopic}
+              </strong>
             </div>
           </div>
 
           <button
             onClick={() => setShowLevelModal(true)}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-indigo-600 bg-white dark:bg-slate-900 shadow-sm border border-indigo-200 dark:border-indigo-800"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold text-indigo-600 bg-white dark:bg-slate-900 shadow-sm border border-indigo-200 dark:border-indigo-800 hover:scale-105 transition-all"
           >
-            <SlidersHorizontal className="w-3.5 h-3.5" /> Change Level / Topic
+            <SlidersHorizontal className="w-3.5 h-3.5" /> Select Grade & Related Topic
           </button>
         </div>
 
@@ -398,20 +448,23 @@ export default function QuizPlayer() {
         </div>
       )}
 
-      {/* Level & Topic Dialog */}
+      {/* Level & Dynamic Topic Dialog */}
       {showLevelModal && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-[var(--bg-card-solid)] border border-[var(--border-color)] p-6 sm:p-8 rounded-3xl max-w-lg w-full shadow-2xl space-y-6">
             <div className="flex items-center justify-between border-b border-[var(--border-color)] pb-4">
               <h3 className="font-heading font-bold text-xl text-[var(--text-main)] flex items-center gap-2">
-                <SlidersHorizontal className="w-5 h-5 text-indigo-600" /> Select Test Level & Topic
+                <SlidersHorizontal className="w-5 h-5 text-indigo-600" /> Select Grade Level & Related Topic
               </h3>
               <button onClick={() => setShowLevelModal(false)} className="text-xl font-bold text-[var(--text-muted)]">&times;</button>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-5">
+              {/* STEP 1: Select Grade Level */}
               <div>
-                <label className="text-xs font-bold text-[var(--text-main)] block mb-2">1. Select Grade Level *</label>
+                <label className="text-xs font-bold text-[var(--text-main)] block mb-2">
+                  1. Select Grade Level *
+                </label>
                 <div className="grid grid-cols-2 gap-2">
                   {[
                     { id: 'primary', label: 'Primary 4 - 6 Math' },
@@ -423,33 +476,40 @@ export default function QuizPlayer() {
                     <button
                       key={lvl.id}
                       type="button"
-                      onClick={() => setSelectedLevel(lvl.id)}
-                      className={`p-3 rounded-xl text-xs font-bold border transition-all text-left ${
+                      onClick={() => handleLevelChange(lvl.id)}
+                      className={`p-3 rounded-xl text-xs font-bold border transition-all text-left flex items-center justify-between ${
                         selectedLevel === lvl.id
-                          ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm'
-                          : 'bg-[var(--bg-main)] text-[var(--text-main)] border-[var(--border-color)]'
+                          ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm font-extrabold'
+                          : 'bg-[var(--bg-main)] text-[var(--text-main)] border-[var(--border-color)] hover:border-indigo-400'
                       }`}
                     >
-                      {lvl.label}
+                      <span>{lvl.label}</span>
+                      {selectedLevel === lvl.id && <CheckCircle2 className="w-4 h-4 text-white" />}
                     </button>
                   ))}
                 </div>
               </div>
 
+              {/* STEP 2: Related Topics Automatically Loaded for Selected Grade */}
               <div>
-                <label className="text-xs font-bold text-[var(--text-main)] block mb-2">2. Filter Topic (Optional)</label>
+                <label className="text-xs font-bold text-[var(--text-main)] block mb-2 flex items-center justify-between">
+                  <span>2. Select Related Topic for {selectedLevel.toUpperCase()} *</span>
+                  <span className="text-[10px] text-emerald-600 font-bold font-mono">
+                    ({availableTopics.length} Topics Available)
+                  </span>
+                </label>
+
                 <select
                   value={selectedTopic}
                   onChange={(e) => setSelectedTopic(e.target.value)}
-                  className="w-full p-3 rounded-xl bg-[var(--bg-main)] border border-[var(--border-color)] text-xs text-[var(--text-main)]"
+                  className="w-full p-3.5 rounded-xl bg-[var(--bg-main)] border border-[var(--border-color)] text-xs font-bold text-[var(--text-main)] focus:outline-none focus:border-indigo-600"
                 >
-                  <option value="all">🌐 All Topics (Combined Trial)</option>
-                  <option value="Fractions">🍕 Fractions (204 Questions)</option>
-                  <option value="Factors, Multiples, LCM & HCF">🔢 Factors, Multiples, LCM & HCF (200 Questions)</option>
-                  <option value="Algebra">🧮 Algebra & Equations</option>
-                  <option value="Geometry">📐 Geometry & Shapes</option>
-                  <option value="Trigonometry">📐 Trigonometry & Angles</option>
-                  <option value="Statistics">📊 Statistics & Probability</option>
+                  <option value="all">🌐 All Topics under {selectedLevel.toUpperCase()} (Combined Practice)</option>
+                  {availableTopics.map((tpc, idx) => (
+                    <option key={idx} value={tpc}>
+                      📐 {tpc}
+                    </option>
+                  ))}
                 </select>
               </div>
             </div>
@@ -459,9 +519,9 @@ export default function QuizPlayer() {
                 setShowLevelModal(false);
                 fetchQuestions(selectedLevel, selectedTopic);
               }}
-              className="w-full py-3.5 rounded-xl text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 shadow-md"
+              className="w-full py-4 rounded-xl text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 shadow-xl shadow-indigo-600/30 transition-all"
             >
-              Start Randomized Practice Quiz
+              Start Practice Trial ({selectedLevel.toUpperCase()} - {selectedTopic})
             </button>
           </div>
         </div>
