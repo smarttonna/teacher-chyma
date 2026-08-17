@@ -135,13 +135,26 @@ function setupTeacherAuth() {
   if (loginForm) {
     loginForm.addEventListener("submit", (e) => {
       e.preventDefault();
-      const val = document.getElementById("teacherPasscode").value;
+
+      // Mobile keyboard fix: Blur input on submit so virtual keyboard closes
+      if (document.activeElement && document.activeElement.blur) {
+        document.activeElement.blur();
+      }
+
+      const input = document.getElementById("teacherPasscode");
+      const val = input ? input.value : "";
+
       if (QuizService.verifyTeacher(val)) {
-        alert("Welcome Teacher Chyma! Admin Dashboard unlocked.");
-        if (loginModal.close) loginModal.close();
-        else loginModal.style.display = "none";
+        if (loginModal) {
+          try {
+            if (loginModal.close) loginModal.close();
+            else loginModal.style.display = "none";
+          } catch(err) {}
+        }
         loginForm.reset();
-        updateTeacherUI();
+
+        // Synchronously update UI immediately for fast mobile feedback
+        updateTeacherUI(true);
       } else {
         alert("Invalid passcode or email. Please check your credentials.");
       }
@@ -152,13 +165,12 @@ function setupTeacherAuth() {
   if (logoutBtn) {
     logoutBtn.addEventListener("click", () => {
       QuizService.logout();
-      alert("Logged out of Teacher Dashboard.");
-      updateTeacherUI();
+      updateTeacherUI(false);
     });
   }
 }
 
-function updateTeacherUI() {
+function updateTeacherUI(shouldScroll = false) {
   const isLoggedIn = QuizService.isLoggedIn();
   const adminView = document.getElementById("teacherLoggedInView");
   const loggedOutView = document.getElementById("teacherLoggedOutView");
@@ -166,6 +178,11 @@ function updateTeacherUI() {
   if (isLoggedIn) {
     if (adminView) adminView.style.display = "block";
     if (loggedOutView) loggedOutView.style.display = "none";
+
+    if (shouldScroll && adminView) {
+      adminView.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
     refreshTeacherSubmissionsTable().catch(err => console.warn("Submissions render notice:", err));
     refreshTeacherQuestionBank().catch(err => console.warn("Question bank render notice:", err));
   } else {
