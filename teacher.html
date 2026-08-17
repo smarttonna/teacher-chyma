@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-  <title>Teacher Admin System | Teacher Chyma - Mathematics Educator</title>
+  <title>Teacher Admin Control Center | Teacher Chyma - Mathematics Educator</title>
 
   <!-- SEO Meta Tags -->
-  <meta name="description" content="Official Teacher Administration System for Teacher Chyma. Manage 200+ level-based math questions across 20 topics, register student accounts, and view live trial results.">
+  <meta name="description" content="Official Educator Administration System for Teacher Chyma. Manage 200+ level-based math questions across 20 topics, register student accounts, and view live trial results.">
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -23,10 +23,10 @@
 
   <!-- Floating Background Mathematical Symbols -->
   <div class="bg-math-patterns">
-    <div class="math-symbol" style="top: 15%; left: 6%; font-size: 3rem; animation-delay: 0s;">π</div>
-    <div class="math-symbol" style="top: 25%; right: 8%; font-size: 3rem; animation-delay: -2s;">√x</div>
-    <div class="math-symbol" style="top: 55%; left: 4%; font-size: 3.5rem; animation-delay: -4s;">∑</div>
-    <div class="math-symbol" style="top: 70%; right: 6%; font-size: 3rem; animation-delay: -1s;">Δ</div>
+    <div class="math-symbol" style="top: 12%; left: 5%; font-size: 3.2rem; animation-delay: 0s;">π</div>
+    <div class="math-symbol" style="top: 25%; right: 7%; font-size: 3rem; animation-delay: -2s;">√x</div>
+    <div class="math-symbol" style="top: 60%; left: 4%; font-size: 3.8rem; animation-delay: -4s;">∑</div>
+    <div class="math-symbol" style="top: 75%; right: 5%; font-size: 3.2rem; animation-delay: -1s;">Δ</div>
   </div>
 
   <!-- Mobile Sidebar Backdrop Overlay -->
@@ -65,77 +65,149 @@
   </header>
 
   <!-- ------------------------------------------------------------------------
-       TEACHER ADMIN SYSTEM HUB
+       TEACHER ADMIN PORTAL SECTION
        ------------------------------------------------------------------------ -->
   <main class="section" style="padding-top: 100px;">
     <div class="container">
 
-      <!-- LOGGED OUT VIEW: Advanced Glassmorphic Login Portal -->
+      <!-- LOGGED OUT VIEW: Modern Split-Screen Educator Login Portal -->
       <div id="teacherLoggedOutView">
-        <div class="section-header text-center" style="max-width: 760px; margin: 0 auto 32px auto;">
-          <div class="hero-badge" style="margin: 0 auto 12px auto;">
-            <i class="fas fa-user-shield"></i>
-            <span>Educator Management Portal</span>
-          </div>
-          <h2 class="section-title">
-            Teacher Admin <span class="gradient-text">System</span>
-          </h2>
-          <p class="section-subtitle">
-            Manage your 200+ quiz questions across 20 topics, register student accounts, and monitor student trial results in real time.
-          </p>
-        </div>
+        
+        <div class="teacher-login-grid">
+          
+          <!-- LEFT HERO FEATURE SHOWCASE -->
+          <div>
+            <div class="hero-badge" style="margin-bottom: 16px;">
+              <i class="fas fa-user-shield"></i>
+              <span>Educator Control Center</span>
+            </div>
+            
+            <h1 style="font-size: 2.2rem; font-weight: 800; font-family: var(--font-heading); line-height: 1.25; margin-bottom: 16px; color: var(--text-main);">
+              Empowering Math Excellence with <span class="gradient-text">Teacher Chyma</span>
+            </h1>
+            
+            <p style="color: var(--text-muted); font-size: 1rem; line-height: 1.6; margin-bottom: 28px;">
+              Access your centralized admin dashboard to publish questions, register student accounts, and track live student performance diagnostics in real time.
+            </p>
 
-        <div class="quiz-creator-card text-center" style="max-width: 440px; margin: 0 auto 40px auto; padding: 40px 28px; box-shadow: var(--shadow-lg);">
-          <div class="logo-badge" style="width: 60px; height: 60px; font-size: 1.6rem; margin: 0 auto 16px auto;">
-            <i class="fas fa-lock"></i>
-          </div>
-          <h3 style="font-size: 1.35rem; margin-bottom: 8px; font-family: var(--font-heading);">Teacher Chyma Login</h3>
-          <p style="color: var(--text-muted); font-size: 0.88rem; margin-bottom: 24px; line-height: 1.5;">
-            Enter your teacher passcode or authorized email to unlock the interactive Admin System.
-          </p>
-
-          <form id="teacherLoginForm">
-            <div class="form-group" style="margin-bottom: 22px; text-align: left;">
-              <label for="teacherPasscode" class="form-label">Passcode / Teacher Email *</label>
+            <div style="display: flex; flex-direction: column; gap: 14px;">
               
-              <div class="password-input-wrapper">
-                <input type="password" id="teacherPasscode" class="form-input" placeholder="Enter passcode or teacher email" required />
-                <button type="button" class="toggle-password-btn" id="togglePasscodeBtn" title="Toggle password visibility">
-                  <i class="fas fa-eye" id="togglePasscodeIcon"></i>
-                </button>
+              <div class="login-feature-card">
+                <div class="login-feature-icon" style="background: rgba(99, 102, 241, 0.12); color: var(--primary);">
+                  <i class="fas fa-cloud"></i>
+                </div>
+                <div>
+                  <h4 style="font-size: 0.98rem; font-weight: 700; color: var(--text-main); margin-bottom: 2px;">Live Cloud Firestore Sync</h4>
+                  <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">Connected live to teacherchyma-db300 database.</p>
+                </div>
               </div>
+
+              <div class="login-feature-card">
+                <div class="login-feature-icon" style="background: rgba(16, 185, 129, 0.12); color: var(--accent-emerald);">
+                  <i class="fas fa-layer-group"></i>
+                </div>
+                <div>
+                  <h4 style="font-size: 0.98rem; font-weight: 700; color: var(--text-main); margin-bottom: 2px;">200+ MCQs Across 20 Math Topics</h4>
+                  <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">Curated level-based questions from Primary to SAT/IGCSE.</p>
+                </div>
+              </div>
+
+              <div class="login-feature-card">
+                <div class="login-feature-icon" style="background: rgba(168, 85, 247, 0.12); color: var(--accent-purple);">
+                  <i class="fas fa-chart-pie"></i>
+                </div>
+                <div>
+                  <h4 style="font-size: 0.98rem; font-weight: 700; color: var(--text-main); margin-bottom: 2px;">Trial Performance Diagnostics</h4>
+                  <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">Detailed breakdown of passed and failed student answers.</p>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- RIGHT GLASSMORPHIC LOGIN CARD -->
+          <div class="login-card-glass">
+            
+            <div class="text-center" style="margin-bottom: 28px;">
+              <div class="qna-avatar" style="width: 64px; height: 64px; font-size: 1.8rem; background: var(--gradient-primary); color: #FFF; margin: 0 auto 16px auto; box-shadow: 0 6px 20px rgba(99, 102, 241, 0.35);">
+                <i class="fas fa-lock"></i>
+              </div>
+              <h3 style="font-size: 1.4rem; font-weight: 800; font-family: var(--font-heading); color: var(--text-main); margin-bottom: 6px;">
+                Educator Portal Login
+              </h3>
+              <p style="color: var(--text-muted); font-size: 0.88rem; line-height: 1.5; margin: 0;">
+                Enter your authorized passcode or email to access the Admin Control Center.
+              </p>
             </div>
 
-            <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; font-size: 0.95rem;">
-              <i class="fas fa-key"></i> Log In to Admin System
-            </button>
-          </form>
-        </div>
-      </div>
-
-      <!-- LOGGED IN VIEW: Full Admin System with Off-Canvas Mobile Side Navigation Layout -->
-      <div id="teacherLoggedInView" style="display: none; margin-bottom: 40px;">
-        
-        <div class="admin-layout">
-
-          <!-- LEFT OFF-CANVAS SIDEBAR NAVIGATION PANEL -->
-          <aside class="admin-sidebar" id="adminSidebar">
-            <div>
-              <div class="sidebar-header">
-                <div class="sidebar-title">
-                  <div class="qna-avatar" style="width: 38px; height: 38px; background: var(--gradient-primary); color: #FFF;">C</div>
-                  <div>
-                    <div style="font-size: 0.98rem; font-weight: 700;">Teacher Chyma</div>
-                    <div style="font-size: 0.75rem; color: var(--accent-emerald); font-weight: 600;">● Admin Online</div>
-                  </div>
+            <form id="teacherLoginForm">
+              <div class="form-group" style="margin-bottom: 24px;">
+                <label for="teacherPasscode" class="form-label" style="font-weight: 700;">Teacher Passcode / Email *</label>
+                
+                <div class="password-input-wrapper">
+                  <input type="password" id="teacherPasscode" class="form-input" placeholder="Enter passcode or teacher email" required style="padding-right: 44px; height: 48px; font-size: 0.95rem;" />
+                  <button type="button" class="toggle-password-btn" id="togglePasscodeBtn" title="Toggle password visibility" style="height: 48px;">
+                    <i class="fas fa-eye" id="togglePasscodeIcon"></i>
+                  </button>
                 </div>
-
-                <!-- Close Side Drawer Button on Mobile -->
-                <button class="qna-modal-close" id="closeAdminSidebarBtn" aria-label="Close sidebar menu" style="font-size: 1.4rem;">&times;</button>
               </div>
 
-              <!-- Sidebar Vertical Navigation Menu -->
-              <nav class="sidebar-menu">
+              <button type="submit" class="btn btn-primary" style="width: 100%; padding: 14px; font-size: 1rem; font-weight: 700; justify-content: center; box-shadow: 0 4px 16px rgba(99, 102, 241, 0.4);">
+                <i class="fas fa-key"></i> Log In to Admin Control Center
+              </button>
+            </form>
+
+            <div style="margin-top: 24px; text-align: center; font-size: 0.82rem; color: var(--text-muted); background: rgba(99, 102, 241, 0.05); padding: 10px; border-radius: var(--radius-sm); border: 1px solid rgba(99, 102, 241, 0.15);">
+              <i class="fas fa-shield-alt" style="color: var(--primary);"></i> Teacher Passcode Default: <code>chyma2026</code>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- LOGGED IN VIEW: Next-Gen Redesigned Admin Dashboard -->
+      <div id="teacherLoggedInView" style="display: none; margin-bottom: 40px;">
+        
+        <!-- TOP WELCOME BANNER -->
+        <div class="admin-welcome-banner">
+          <div style="display: flex; align-items: center; gap: 16px;">
+            <div class="qna-avatar" style="width: 52px; height: 52px; font-size: 1.4rem; background: var(--gradient-primary); color: #FFF; box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);">
+              C
+            </div>
+            <div>
+              <h3 style="font-size: 1.35rem; font-weight: 800; font-family: var(--font-heading); color: var(--text-main); margin-bottom: 4px;">
+                Welcome back, Teacher Chyma 👋
+              </h3>
+              <div style="font-size: 0.85rem; color: var(--text-muted); display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+                <span><i class="far fa-calendar-alt"></i> <strong id="adminCurrentDate">Monday, Aug 17, 2026</strong></span>
+                <span style="color: var(--accent-emerald); font-weight: 600;"><i class="fas fa-check-circle"></i> Live Cloud Sync Active</span>
+              </div>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 10px; align-items: center;">
+            <a href="quiz.html" class="btn btn-outline btn-sm">
+              <i class="fas fa-user-graduate"></i> Student Quiz View
+            </a>
+            <button class="btn btn-secondary btn-sm" id="teacherLogoutBtn" style="border: 1px solid var(--border-color);">
+              <i class="fas fa-sign-out-alt"></i> Log Out
+            </button>
+          </div>
+        </div>
+
+        <div class="admin-layout">
+
+          <!-- LEFT SIDEBAR NAVIGATION PANEL -->
+          <aside class="admin-sidebar" id="adminSidebar">
+            <div style="margin-bottom: 20px;">
+              <div style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 12px; padding-left: 8px;">
+                NAVIGATION MENU
+              </div>
+
+              <!-- Sidebar Vertical Navigation Buttons -->
+              <nav class="sidebar-menu" style="display: flex; flex-direction: column; gap: 6px;">
                 <button class="sidebar-nav-btn active" id="adminTabOverviewBtn">
                   <i class="fas fa-chart-pie"></i>
                   <span>Dashboard Overview</span>
@@ -162,16 +234,6 @@
                 </button>
               </nav>
             </div>
-
-            <!-- Sidebar Footer Controls -->
-            <div class="sidebar-footer">
-              <a href="quiz.html" class="btn btn-outline btn-sm" style="width: 100%; text-align: center; justify-content: center;">
-                <i class="fas fa-user-graduate"></i> Student View
-              </a>
-              <button class="btn btn-secondary btn-sm" id="teacherLogoutBtn" style="width: 100%; text-align: center; justify-content: center;">
-                <i class="fas fa-sign-out-alt"></i> Log Out Teacher
-              </button>
-            </div>
           </aside>
 
           <!-- RIGHT MAIN DASHBOARD CONTENT AREA -->
@@ -188,7 +250,7 @@
               </button>
             </div>
 
-            <!-- PANEL 0: DEDICATED DASHBOARD OVERVIEW & KPI METRICS PAGE -->
+            <!-- PANEL 0: DASHBOARD OVERVIEW & KPI METRICS -->
             <div id="adminPanelOverview" class="quiz-creator-card" style="display: block;">
               <div style="margin-bottom: 24px;">
                 <h4 style="font-size: 1.25rem; font-weight: 800; color: var(--text-main); margin-bottom: 6px;">
