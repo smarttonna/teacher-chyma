@@ -2243,6 +2243,38 @@ h1, h2, h3, h4, .font-heading {
   transform: translateY(-1px);
 }
 
+/* Vertically Scrollable Question Bank List Container */
+#adminQuestionBankList {
+  max-height: 650px;
+  overflow-y: auto;
+  padding: 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  background: var(--bg-main);
+  scroll-behavior: smooth;
+}
+
+#adminQuestionBankList::-webkit-scrollbar {
+  width: 8px;
+}
+
+#adminQuestionBankList::-webkit-scrollbar-track {
+  background: rgba(99, 102, 241, 0.04);
+  border-radius: 4px;
+}
+
+#adminQuestionBankList::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: 4px;
+}
+
+@media (max-width: 576px) {
+  #adminQuestionBankList {
+    max-height: 60vh;
+    padding: 10px;
+  }
+}
+
 @media (max-width: 576px) {
   .admin-batch-bar {
     flex-direction: column;
