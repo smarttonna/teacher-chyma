@@ -136,7 +136,12 @@
 
               <!-- Sidebar Vertical Navigation Menu -->
               <nav class="sidebar-menu">
-                <button class="sidebar-nav-btn active" id="adminTabSubmissionsBtn">
+                <button class="sidebar-nav-btn active" id="adminTabOverviewBtn">
+                  <i class="fas fa-chart-pie"></i>
+                  <span>Dashboard Overview</span>
+                </button>
+
+                <button class="sidebar-nav-btn" id="adminTabSubmissionsBtn">
                   <i class="fas fa-chart-bar"></i>
                   <span>Student Trial Results</span>
                 </button>
@@ -183,51 +188,82 @@
               </button>
             </div>
 
-            <!-- KPI METRICS GRID -->
-            <div class="kpi-grid">
-              <div class="kpi-card">
-                <div class="kpi-icon kpi-icon-blue">
-                  <i class="fas fa-users"></i>
+            <!-- PANEL 0: DEDICATED DASHBOARD OVERVIEW & KPI METRICS PAGE -->
+            <div id="adminPanelOverview" class="quiz-creator-card" style="display: block;">
+              <div style="margin-bottom: 24px;">
+                <h4 style="font-size: 1.25rem; font-weight: 800; color: var(--text-main); margin-bottom: 6px;">
+                  <i class="fas fa-chart-pie" style="color: var(--primary);"></i> Performance Analytics & KPI Overview
+                </h4>
+                <p style="color: var(--text-muted); font-size: 0.9rem;">
+                  Real-time summary of student quiz attempts, class average score, registered roster, and active question bank.
+                </p>
+              </div>
+
+              <!-- DEDICATED KPI METRICS GRID -->
+              <div class="kpi-grid" style="margin-bottom: 28px;">
+                <div class="kpi-card">
+                  <div class="kpi-icon kpi-icon-blue">
+                    <i class="fas fa-users"></i>
+                  </div>
+                  <div class="kpi-details">
+                    <div class="kpi-value" id="kpiTotalAttempts">0</div>
+                    <div class="kpi-label">Student Quiz Attempts</div>
+                  </div>
                 </div>
-                <div class="kpi-details">
-                  <div class="kpi-value" id="kpiTotalAttempts">0</div>
-                  <div class="kpi-label">Student Quiz Attempts</div>
+
+                <div class="kpi-card">
+                  <div class="kpi-icon kpi-icon-emerald">
+                    <i class="fas fa-chart-line"></i>
+                  </div>
+                  <div class="kpi-details">
+                    <div class="kpi-value" id="kpiAvgScore">0%</div>
+                    <div class="kpi-label">Average Class Score</div>
+                  </div>
+                </div>
+
+                <div class="kpi-card">
+                  <div class="kpi-icon kpi-icon-purple">
+                    <i class="fas fa-database"></i>
+                  </div>
+                  <div class="kpi-details">
+                    <div class="kpi-value" id="kpiTotalQuestions">0</div>
+                    <div class="kpi-label">MCQs Published</div>
+                  </div>
+                </div>
+
+                <div class="kpi-card">
+                  <div class="kpi-icon kpi-icon-amber">
+                    <i class="fas fa-user-graduate"></i>
+                  </div>
+                  <div class="kpi-details">
+                    <div class="kpi-value" id="kpiRegisteredStudents">0</div>
+                    <div class="kpi-label">Registered Students</div>
+                  </div>
                 </div>
               </div>
 
-              <div class="kpi-card">
-                <div class="kpi-icon kpi-icon-emerald">
-                  <i class="fas fa-chart-line"></i>
-                </div>
-                <div class="kpi-details">
-                  <div class="kpi-value" id="kpiAvgScore">0%</div>
-                  <div class="kpi-label">Average Class Score</div>
-                </div>
-              </div>
+              <!-- CLASS INSIGHTS & QUICK ACTION CARD -->
+              <div style="background: var(--bg-main); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 20px;">
+                <h5 style="font-size: 1rem; font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
+                  <i class="fas fa-lightbulb" style="color: var(--accent-amber);"></i> Quick Insights & Class Health
+                </h5>
+                <p style="color: var(--text-muted); font-size: 0.88rem; line-height: 1.6; margin-bottom: 16px;">
+                  Your LMS currently has <strong id="overviewCountText">200+ active questions</strong> spanning 20 Mathematics topics. Review student trial diagnostic breakdowns in the <strong>Student Trial Results</strong> tab to identify topics requiring revision.
+                </p>
 
-              <div class="kpi-card">
-                <div class="kpi-icon kpi-icon-purple">
-                  <i class="fas fa-database"></i>
-                </div>
-                <div class="kpi-details">
-                  <div class="kpi-value" id="kpiTotalQuestions">0</div>
-                  <div class="kpi-label">MCQs Published</div>
-                </div>
-              </div>
-
-              <div class="kpi-card">
-                <div class="kpi-icon kpi-icon-amber">
-                  <i class="fas fa-user-graduate"></i>
-                </div>
-                <div class="kpi-details">
-                  <div class="kpi-value" id="kpiRegisteredStudents">0</div>
-                  <div class="kpi-label">Registered Students</div>
+                <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                  <button class="btn btn-primary btn-sm" onclick="document.getElementById('adminTabSubmissionsBtn').click()">
+                    <i class="fas fa-chart-bar"></i> View Student Trial Results
+                  </button>
+                  <button class="btn btn-outline btn-sm" onclick="document.getElementById('adminTabBankBtn').click()">
+                    <i class="fas fa-database"></i> Explore Question Directory
+                  </button>
                 </div>
               </div>
             </div>
 
             <!-- PANEL 1: Student Trial Results Dashboard -->
-            <div id="adminPanelSubmissions" class="quiz-creator-card" style="display: block;">
+            <div id="adminPanelSubmissions" class="quiz-creator-card" style="display: none;">
               
               <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 20px;">
                 <h4 style="font-size: 1.15rem; font-weight: 700; display: flex; align-items: center; gap: 10px;">

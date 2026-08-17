@@ -82,7 +82,6 @@ function setupMobileSidebarDrawer() {
   if (closeBtn) closeBtn.addEventListener("click", closeDrawer);
   if (backdrop) backdrop.addEventListener("click", closeDrawer);
 
-  // Close drawer on nav item click on mobile
   const navBtns = sidebar.querySelectorAll(".sidebar-nav-btn");
   navBtns.forEach(btn => {
     btn.addEventListener("click", () => {
@@ -254,6 +253,9 @@ function updateKpiMetrics() {
 
   if (kpiTotalQuestions) kpiTotalQuestions.textContent = cachedQuestions.length;
   if (kpiRegisteredStudents) kpiRegisteredStudents.textContent = cachedStudents.length;
+
+  const overviewText = document.getElementById("overviewCountText");
+  if (overviewText) overviewText.textContent = `${cachedQuestions.length} active questions`;
 }
 
 // ----------------------------------------------------------------------------
@@ -323,20 +325,26 @@ function setupLiveMcqPreview() {
 }
 
 // ----------------------------------------------------------------------------
-// 5. TEACHER DASHBOARD PANELS (Submissions, Roster, Creator, Question Bank)
+// 5. TEACHER DASHBOARD PANELS (Overview, Submissions, Roster, Creator, Question Bank)
 // ----------------------------------------------------------------------------
 function setupTeacherAdminPanels() {
+  const tabOverview = document.getElementById("adminTabOverviewBtn");
   const tabSubmissions = document.getElementById("adminTabSubmissionsBtn");
   const tabRoster = document.getElementById("adminTabRosterBtn");
   const tabCreate = document.getElementById("adminTabCreateBtn");
   const tabBank = document.getElementById("adminTabBankBtn");
 
+  const panelOverview = document.getElementById("adminPanelOverview");
   const panelSubmissions = document.getElementById("adminPanelSubmissions");
   const panelRoster = document.getElementById("adminPanelRoster");
   const panelCreate = document.getElementById("adminPanelCreate");
   const panelBank = document.getElementById("adminPanelBank");
 
-  if (tabSubmissions && tabRoster && tabCreate && tabBank) {
+  if (tabOverview && tabSubmissions && tabRoster && tabCreate && tabBank) {
+    tabOverview.addEventListener("click", () => {
+      setActiveAdminTab(tabOverview, panelOverview);
+    });
+
     tabSubmissions.addEventListener("click", () => {
       setActiveAdminTab(tabSubmissions, panelSubmissions);
       refreshTeacherSubmissionsTable();
@@ -358,8 +366,8 @@ function setupTeacherAdminPanels() {
   }
 
   function setActiveAdminTab(activeTab, activePanel) {
-    [tabSubmissions, tabRoster, tabCreate, tabBank].forEach(t => t && t.classList.remove("active"));
-    [panelSubmissions, panelRoster, panelCreate, panelBank].forEach(p => p && (p.style.display = "none"));
+    [tabOverview, tabSubmissions, tabRoster, tabCreate, tabBank].forEach(t => t && t.classList.remove("active"));
+    [panelOverview, panelSubmissions, panelRoster, panelCreate, panelBank].forEach(p => p && (p.style.display = "none"));
 
     if (activeTab) activeTab.classList.add("active");
     if (activePanel) activePanel.style.display = "block";
