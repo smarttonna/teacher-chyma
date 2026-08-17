@@ -437,23 +437,23 @@ function setupTeacherAdminPanels() {
     });
   }
 
-  // Seed 200 Questions Button
+  // Seed 404 DOCX Questions Button
   const seedBtn = document.getElementById("seed200Btn");
   if (seedBtn) {
     seedBtn.addEventListener("click", async () => {
-      if (confirm("Load 200 Sample MCQs across 20 Mathematics topics into your Question Bank?")) {
+      if (confirm("Delete all existing questions and load 404 questions from DOCX files (Fractions & Factors/LCM/HCF)?")) {
         seedBtn.disabled = true;
-        seedBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Seeding 200 Questions...`;
+        seedBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Uploading 404 DOCX Questions...`;
         try {
           await QuizService.seed200Quizzes();
-          alert("🎉 200 Mathematics Questions (20 Topics × 10 Questions) loaded successfully!");
+          alert("🎉 404 DOCX Questions (Fractions & Factors/LCM/HCF) uploaded successfully!");
           refreshTeacherQuestionBank();
           loadStudentQuiz(currentStudentLevel);
         } catch (err) {
           alert("Notice: " + err.message);
         } finally {
           seedBtn.disabled = false;
-          seedBtn.innerHTML = `<i class="fas fa-cloud-download-alt"></i> Load 200 Questions (20 Topics)`;
+          seedBtn.innerHTML = `<i class="fas fa-file-word"></i> Load 404 DOCX Questions (Fractions & Factors)`;
         }
       }
     });

@@ -154,13 +154,21 @@ export const QuizService = {
     return level === "all" ? all : all.filter(item => item.level === level);
   },
 
-  // Seed all 200 MCQs to Firestore or LocalStorage
+  // Wipe old questions and seed all 404 DOCX MCQs to Firestore & LocalStorage
   async seed200Quizzes() {
     if (isFirebaseConfigured && db) {
       try {
+        // Delete all existing questions from Firestore first
+        const snapshot = await getDocs(collection(db, "quizzes"));
+        for (const docSnap of snapshot.docs) {
+          await deleteDoc(doc(db, "quizzes", docSnap.id));
+        }
+
+        // Upload all parsed DOCX questions
         for (const q of SAMPLE_200_QUIZZES) {
           await addDoc(collection(db, "quizzes"), {
             level: q.level,
+            topic: q.topic || "Mathematics",
             question: q.question,
             options: q.options,
             correctIndex: q.correctIndex,
@@ -168,6 +176,7 @@ export const QuizService = {
             createdAt: serverTimestamp()
           });
         }
+        saveLocalQuizzes(SAMPLE_200_QUIZZES);
         return true;
       } catch (err) {
         console.warn("Firestore seeding notice, saving locally:", err);
