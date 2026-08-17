@@ -403,6 +403,44 @@ function setupTeacherAdminPanels() {
     });
   }
 
+  // Select All MCQs Checkbox & Delete Selected Button
+  const selectAllCheckbox = document.getElementById("selectAllMcqsCheckbox");
+  const deleteSelectedBtn = document.getElementById("deleteSelectedMcqsBtn");
+
+  if (selectAllCheckbox) {
+    selectAllCheckbox.addEventListener("change", () => {
+      const visibleCheckboxes = document.querySelectorAll(".mcq-select-checkbox");
+      visibleCheckboxes.forEach(cb => cb.checked = selectAllCheckbox.checked);
+      updateSelectedMcqsCounter();
+    });
+  }
+
+  if (deleteSelectedBtn) {
+    deleteSelectedBtn.addEventListener("click", async () => {
+      const checkedBoxes = document.querySelectorAll(".mcq-select-checkbox:checked");
+      const selectedIds = Array.from(checkedBoxes).map(cb => cb.dataset.id);
+
+      if (selectedIds.length === 0) return;
+
+      if (confirm(`Are you sure you want to delete ${selectedIds.length} selected questions?`)) {
+        deleteSelectedBtn.disabled = true;
+        deleteSelectedBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Deleting ${selectedIds.length}...`;
+
+        try {
+          await QuizService.deleteMultipleQuizzes(selectedIds);
+          alert(`🗑️ ${selectedIds.length} questions deleted successfully!`);
+          if (selectAllCheckbox) selectAllCheckbox.checked = false;
+          refreshTeacherQuestionBank();
+          loadStudentQuiz(currentStudentLevel);
+        } catch (err) {
+          alert("Notice: " + err.message);
+        } finally {
+          deleteSelectedBtn.disabled = true;
+        }
+      }
+    });
+  }
+
   // Submissions Search & Level Filter
   const subSearchInput = document.getElementById("submissionSearchInput");
   const subLevelFilter = document.getElementById("submissionLevelFilter");
@@ -562,6 +600,29 @@ function setupTeacherAdminPanels() {
   });
 }
 
+function updateSelectedMcqsCounter() {
+  const checkedBoxes = document.querySelectorAll(".mcq-select-checkbox:checked");
+  const count = checkedBoxes.length;
+
+  const counterEl = document.getElementById("selectedMcqsCounter");
+  const deleteBtn = document.getElementById("deleteSelectedMcqsBtn");
+  const countBtnSpan = document.getElementById("deleteBtnCount");
+
+  if (counterEl) counterEl.textContent = `${count} Selected`;
+  if (countBtnSpan) countBtnSpan.textContent = count;
+
+  if (deleteBtn) {
+    deleteBtn.disabled = count === 0;
+    if (count > 0) {
+      deleteBtn.classList.remove("btn-secondary");
+      deleteBtn.classList.add("btn-danger");
+    } else {
+      deleteBtn.classList.remove("btn-danger");
+      deleteBtn.classList.add("btn-secondary");
+    }
+  }
+}
+
 // Render Registered Student Roster
 async function refreshTeacherRosterTable() {
   const tbody = document.getElementById("studentRosterTableBody");
@@ -676,7 +737,6 @@ function filterAndRenderSubmissions() {
     `;
   }).join("");
 
-  // Bind View Breakdown click handlers
   tbody.querySelectorAll(".btn-view-submission-details").forEach(btn => {
     btn.addEventListener("click", () => {
       const index = parseInt(btn.dataset.index, 10);
@@ -754,7 +814,7 @@ function openSubmissionDetailsModal(sub) {
   else modal.style.display = "block";
 }
 
-// Render Question Bank Directory
+// Render Question Bank Directory with Multi-Select Checkboxes
 async function refreshTeacherQuestionBank(filter = "all") {
   const container = document.getElementById("adminQuestionBankList");
   if (!container) return;
@@ -784,6 +844,10 @@ function filterAndRenderQuestionBank(activeFilter = "all") {
   const countBadge = document.getElementById("adminQuestionCount");
   if (countBadge) countBadge.textContent = `${list.length} Questions`;
 
+  const selectAllCb = document.getElementById("selectAllMcqsCheckbox");
+  if (selectAllCb) selectAllCb.checked = false;
+  updateSelectedMcqsCounter();
+
   if (list.length === 0) {
     container.innerHTML = `<div class="qna-empty-state"><p>No questions found matching criteria.</p></div>`;
     return;
@@ -792,7 +856,10 @@ function filterAndRenderQuestionBank(activeFilter = "all") {
   container.innerHTML = list.map(q => `
     <div class="admin-mcq-card" data-id="${q.id}">
       <div class="admin-mcq-header">
-        <span class="qna-category-pill category-${q.level}">${getLevelLabel(q.level)}</span>
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <input type="checkbox" class="mcq-select-checkbox" data-id="${q.id}" style="width: 18px; height: 18px; cursor: pointer;" />
+          <span class="qna-category-pill category-${q.level}">${getLevelLabel(q.level)}</span>
+        </div>
         <div style="display: flex; gap: 8px;">
           <button class="btn-edit-mcq" data-id="${q.id}" style="background: rgba(14, 165, 233, 0.1); color: #0EA5E9; border: 1px solid rgba(14, 165, 233, 0.3); padding: 4px 12px; border-radius: var(--radius-full); font-size: 0.75rem; font-weight: 600; cursor: pointer;">
             <i class="fas fa-edit"></i> Edit
@@ -815,6 +882,11 @@ function filterAndRenderQuestionBank(activeFilter = "all") {
       ${q.explanation ? `<div class="admin-mcq-explanation"><strong>Explanation:</strong> ${escapeHTML(q.explanation)}</div>` : ''}
     </div>
   `).join("");
+
+  // Bind checkbox selection change listeners
+  container.querySelectorAll(".mcq-select-checkbox").forEach(cb => {
+    cb.addEventListener("change", updateSelectedMcqsCounter);
+  });
 
   const editModal = document.getElementById("editMcqModal");
   container.querySelectorAll(".btn-edit-mcq").forEach(btn => {

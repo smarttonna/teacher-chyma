@@ -253,6 +253,23 @@ export const QuizService = {
     saveLocalQuizzes(list);
   },
 
+  // Bulk Delete Multiple Questions
+  async deleteMultipleQuizzes(idsArray) {
+    if (!idsArray || idsArray.length === 0) return;
+    if (isFirebaseConfigured && db) {
+      try {
+        for (const id of idsArray) {
+          await deleteDoc(doc(db, "quizzes", id));
+        }
+      } catch (err) {
+        console.warn("Firestore bulk delete notice:", err);
+      }
+    }
+    let list = getLocalQuizzes();
+    list = list.filter(item => !idsArray.includes(item.id));
+    saveLocalQuizzes(list);
+  },
+
   async saveSubmission({ studentName, level, score, totalQuestions, detailedAnswers }) {
     const percentage = Math.round((score / totalQuestions) * 100);
     const submissionData = {
