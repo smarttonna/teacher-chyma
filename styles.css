@@ -2211,6 +2211,38 @@ h1, h2, h3, h4, .font-heading {
   flex-shrink: 0;
 }
 
+/* Delete Selected Batch Button High-Contrast Visibility */
+#deleteSelectedMcqsBtn {
+  font-weight: 700;
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+#deleteSelectedMcqsBtn:disabled {
+  background: rgba(244, 63, 94, 0.08) !important;
+  color: #E11D48 !important;
+  border: 1px solid rgba(225, 29, 72, 0.3) !important;
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+#deleteSelectedMcqsBtn:not(:disabled) {
+  background: #E11D48 !important;
+  color: #FFFFFF !important;
+  border: none !important;
+  box-shadow: 0 4px 14px rgba(225, 29, 72, 0.35);
+  cursor: pointer;
+}
+
+#deleteSelectedMcqsBtn:not(:disabled):hover {
+  background: #BE123C !important;
+  transform: translateY(-1px);
+}
+
 @media (max-width: 576px) {
   .admin-batch-bar {
     flex-direction: column;

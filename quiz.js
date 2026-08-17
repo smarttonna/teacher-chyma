@@ -612,14 +612,7 @@ function updateSelectedMcqsCounter() {
   if (countBtnSpan) countBtnSpan.textContent = count;
 
   if (deleteBtn) {
-    deleteBtn.disabled = count === 0;
-    if (count > 0) {
-      deleteBtn.classList.remove("btn-secondary");
-      deleteBtn.classList.add("btn-danger");
-    } else {
-      deleteBtn.classList.remove("btn-danger");
-      deleteBtn.classList.add("btn-secondary");
-    }
+    deleteBtn.disabled = (count === 0);
   }
 }
 
