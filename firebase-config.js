@@ -7,7 +7,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { 
   getFirestore, collection, addDoc, getDocs, doc, deleteDoc, updateDoc,
-  query, where, orderBy, serverTimestamp 
+  query, where, serverTimestamp 
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 // Your Actual Live Firebase Credentials (TeacherChyma project)
@@ -178,7 +178,7 @@ export const QuizService = {
         const qRef = collection(db, "quizzes");
         const queryRef = level === "all" ? qRef : query(qRef, where("level", "==", level));
         const snapshot = await getDocs(queryRef);
-        const list = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        let list = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         if (list.length > 0) return list;
       } catch (err) {
         console.warn("Firestore quiz fetch notice, using local cache:", err);
@@ -297,14 +297,19 @@ export const QuizService = {
   async getSubmissions() {
     if (isFirebaseConfigured && db) {
       try {
-        const qRef = query(collection(db, "student_submissions"), orderBy("createdAt", "desc"));
+        const qRef = collection(db, "student_submissions");
         const snapshot = await getDocs(qRef);
-        const list = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        if (list.length > 0) return list;
+        let list = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        if (list.length > 0) {
+          list.sort((a, b) => new Date(b.submittedAt || 0) - new Date(a.submittedAt || 0));
+          return list;
+        }
       } catch (err) {
-        console.warn("Firestore submissions fetch notice:", err);
+        console.warn("Firestore submissions fetch notice, using local cache:", err);
       }
     }
-    return getLocalSubmissions();
+    const localList = getLocalSubmissions();
+    localList.sort((a, b) => new Date(b.submittedAt || 0) - new Date(a.submittedAt || 0));
+    return localList;
   }
 };

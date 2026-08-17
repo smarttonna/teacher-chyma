@@ -142,9 +142,8 @@ function setupTeacherAuth() {
         else loginModal.style.display = "none";
         loginForm.reset();
         updateTeacherUI();
-        refreshTeacherSubmissionsTable();
       } else {
-        alert("Invalid passcode. Enter 'chyma2026' or teacher email.");
+        alert("Invalid passcode or email. Please check your credentials.");
       }
     });
   }
@@ -162,13 +161,16 @@ function setupTeacherAuth() {
 function updateTeacherUI() {
   const isLoggedIn = QuizService.isLoggedIn();
   const adminView = document.getElementById("teacherLoggedInView");
+  const loggedOutView = document.getElementById("teacherLoggedOutView");
 
   if (isLoggedIn) {
     if (adminView) adminView.style.display = "block";
-    refreshTeacherSubmissionsTable();
-    refreshTeacherQuestionBank();
+    if (loggedOutView) loggedOutView.style.display = "none";
+    refreshTeacherSubmissionsTable().catch(err => console.warn("Submissions render notice:", err));
+    refreshTeacherQuestionBank().catch(err => console.warn("Question bank render notice:", err));
   } else {
     if (adminView) adminView.style.display = "none";
+    if (loggedOutView) loggedOutView.style.display = "block";
   }
 }
 
