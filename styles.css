@@ -2069,6 +2069,86 @@ h1, h2, h3, h4, .font-heading {
 }
 
 /* ==========================================================================
+   PASSED & FAILED QUESTION BREAKDOWN & ROSTER STYLES
+   ========================================================================== */
+
+.result-breakdown-card {
+  background: var(--bg-main);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  margin-bottom: 14px;
+  position: relative;
+  transition: border-color var(--transition-fast);
+}
+
+.result-breakdown-card.is-correct {
+  border-left: 4px solid #10B981;
+  background: rgba(16, 185, 129, 0.03);
+}
+
+.result-breakdown-card.is-wrong {
+  border-left: 4px solid #F43F5E;
+  background: rgba(244, 63, 94, 0.03);
+}
+
+.result-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.status-badge-correct {
+  background: rgba(16, 185, 129, 0.14);
+  color: #065F46;
+}
+
+.status-badge-wrong {
+  background: rgba(244, 63, 94, 0.14);
+  color: #991B1B;
+}
+
+.breakdown-choice-box {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 10px;
+  font-size: 0.88rem;
+}
+
+.breakdown-choice-pill {
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.choice-user-correct {
+  background: rgba(16, 185, 129, 0.12);
+  color: #065F46;
+  font-weight: 600;
+}
+
+.choice-user-wrong {
+  background: rgba(244, 63, 94, 0.12);
+  color: #991B1B;
+  font-weight: 600;
+}
+
+.choice-actual-correct {
+  background: rgba(99, 102, 241, 0.1);
+  color: var(--primary);
+  font-weight: 600;
+}
+
+/* ==========================================================================
    ADVANCED ADMIN DASHBOARD & KPI METRICS STYLES
    ========================================================================== */
 

@@ -6,7 +6,7 @@
   <title>Teacher Admin System | Teacher Chyma - Mathematics Educator</title>
 
   <!-- SEO Meta Tags -->
-  <meta name="description" content="Official Teacher Administration System for Teacher Chyma. Manage quiz question banks, create level-based MCQs, and view live student trial results.">
+  <meta name="description" content="Official Teacher Administration System for Teacher Chyma. Manage quiz question banks, create level-based MCQs, register students, and view live student trial results.">
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -78,7 +78,7 @@
             Teacher Admin <span class="gradient-text">System</span>
           </h2>
           <p class="section-subtitle">
-            Manage your quiz questions, create level-based MCQs, and monitor student trial results in real time.
+            Manage your quiz questions, register student accounts, and monitor student trial results in real time.
           </p>
         </div>
 
@@ -133,6 +133,11 @@
                 <button class="sidebar-nav-btn active" id="adminTabSubmissionsBtn">
                   <i class="fas fa-chart-bar"></i>
                   <span>Student Trial Results</span>
+                </button>
+
+                <button class="sidebar-nav-btn" id="adminTabRosterBtn">
+                  <i class="fas fa-id-card"></i>
+                  <span>Student Accounts</span>
                 </button>
 
                 <button class="sidebar-nav-btn" id="adminTabCreateBtn">
@@ -195,11 +200,11 @@
 
               <div class="kpi-card">
                 <div class="kpi-icon kpi-icon-amber">
-                  <i class="fas fa-trophy"></i>
+                  <i class="fas fa-user-graduate"></i>
                 </div>
                 <div class="kpi-details">
-                  <div class="kpi-value" id="kpiTopLevel">SSS</div>
-                  <div class="kpi-label">Most Active Level</div>
+                  <div class="kpi-value" id="kpiRegisteredStudents">0</div>
+                  <div class="kpi-label">Registered Students</div>
                 </div>
               </div>
             </div>
@@ -245,6 +250,7 @@
                       <th>Score Ratio</th>
                       <th>Percentage & Progress</th>
                       <th>Date & Time</th>
+                      <th>Action</th>
                     </tr>
                   </thead>
                   <tbody id="studentSubmissionsTableBody">
@@ -254,7 +260,81 @@
               </div>
             </div>
 
-            <!-- PANEL 2: Question Creator Studio Form + Live MCQ Student Preview -->
+            <!-- PANEL 2: Student Accounts & Registration Roster -->
+            <div id="adminPanelRoster" class="quiz-creator-card" style="display: none;">
+              
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; align-items: start;">
+                
+                <!-- Register Student Form -->
+                <div>
+                  <h4 style="margin-bottom: 16px; font-size: 1.15rem; font-weight: 700;">
+                    <i class="fas fa-user-plus" style="color: var(--primary);"></i> Register New Student Account
+                  </h4>
+
+                  <form id="registerStudentForm">
+                    <div class="form-group" style="margin-bottom: 14px;">
+                      <label for="regStudentName" class="form-label">Full Student Name *</label>
+                      <input type="text" id="regStudentName" class="form-input" placeholder="e.g. Grace Eze or Chinedu Okeke" required />
+                    </div>
+
+                    <div class="form-row-2" style="margin-bottom: 14px;">
+                      <div class="form-group">
+                        <label for="regStudentLevel" class="form-label">Assigned Grade Level *</label>
+                        <select id="regStudentLevel" class="form-select" required>
+                          <option value="primary">Primary 4 - 6</option>
+                          <option value="jss">Junior Secondary (JSS)</option>
+                          <option value="sss" selected>Senior Secondary (SSS)</option>
+                          <option value="waec">WAEC / NECO Prep</option>
+                          <option value="sat_igcse">IGCSE / SAT Math</option>
+                        </select>
+                      </div>
+
+                      <div class="form-group">
+                        <label for="regStudentPin" class="form-label">Access PIN / Password *</label>
+                        <input type="text" id="regStudentPin" class="form-input" placeholder="e.g. 1234" required />
+                      </div>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 20px;">
+                      <label for="regStudentEmail" class="form-label">Student Email / Username (Optional)</label>
+                      <input type="email" id="regStudentEmail" class="form-input" placeholder="e.g. grace@student.com" />
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">
+                      <i class="fas fa-user-check"></i> Register Student Account
+                    </button>
+                  </form>
+                </div>
+
+                <!-- Roster Directory Table -->
+                <div>
+                  <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+                    <h4 style="font-size: 1.1rem; font-weight: 700;"><i class="fas fa-id-card"></i> Registered Roster</h4>
+                    <span id="studentRosterCount" class="qna-badge qna-badge-solved">0 Students</span>
+                  </div>
+
+                  <div style="overflow-x: auto;">
+                    <table class="admin-table">
+                      <thead>
+                        <tr>
+                          <th>Student</th>
+                          <th>Level</th>
+                          <th>PIN</th>
+                          <th>Action</th>
+                        </tr>
+                      </thead>
+                      <tbody id="studentRosterTableBody">
+                        <!-- Rendered dynamically by quiz.js -->
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+
+            <!-- PANEL 3: Question Creator Studio Form + Live MCQ Student Preview -->
             <div id="adminPanelCreate" class="quiz-creator-card" style="display: none;">
               
               <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; align-items: start;">
@@ -360,7 +440,7 @@
               </div>
             </div>
 
-            <!-- PANEL 3: Question Bank Directory -->
+            <!-- PANEL 4: Question Bank Directory -->
             <div id="adminPanelBank" class="quiz-creator-card" style="display: none;">
               
               <div class="admin-filter-bar">
@@ -391,6 +471,25 @@
 
     </div>
   </main>
+
+  <!-- STUDENT ATTEMPT PASSED/FAILED DIAGNOSTICS BREAKDOWN MODAL -->
+  <dialog id="submissionDetailsModal" class="qna-dialog" style="max-width: 680px;">
+    <div class="qna-modal-header">
+      <h3 id="modalStudentTitle"><i class="fas fa-clipboard-check" style="color: var(--primary);"></i> Student Quiz Attempt Diagnostics</h3>
+      <button class="qna-modal-close" id="closeSubmissionDetailsModalBtn" aria-label="Close dialog">&times;</button>
+    </div>
+    <div class="qna-modal-body">
+      <div id="modalStudentHeaderSummary" style="margin-bottom: 20px; padding: 16px; background: var(--bg-main); border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+        <!-- Populated dynamically -->
+      </div>
+
+      <h4 style="font-size: 1rem; font-weight: 700; margin-bottom: 14px;">Question Breakdown & Performance</h4>
+      
+      <div id="modalQuestionBreakdownList">
+        <!-- Rendered dynamically -->
+      </div>
+    </div>
+  </dialog>
 
   <!-- EDIT QUESTION MODAL DIALOG -->
   <dialog id="editMcqModal" class="qna-dialog" style="max-width: 600px;">

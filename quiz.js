@@ -1,7 +1,7 @@
 /**
  * ============================================================================
  * TEACHER CHYMA - ADVANCED QUIZ LMS & ADMIN SYSTEM (quiz.js)
- * Student Name Entry + Level-Based Quiz + Teacher Analytics Dashboard
+ * Student Registration + Level-Based Quiz + Passed/Failed Diagnostics
  * ============================================================================
  */
 
@@ -15,8 +15,10 @@ let currentStudentLevel = "sss";
 let studentQuestions = [];
 let currentQuestionIndex = 0;
 let userScore = 0;
+let currentDetailedAnswers = [];
 let cachedSubmissions = [];
 let cachedQuestions = [];
+let cachedStudents = [];
 
 function initQuizPage() {
   renderFirebaseStatusNotice();
@@ -184,6 +186,7 @@ function updateTeacherUI(shouldScroll = false) {
     }
 
     refreshTeacherSubmissionsTable().catch(err => console.warn("Submissions render notice:", err));
+    refreshTeacherRosterTable().catch(err => console.warn("Roster render notice:", err));
     refreshTeacherQuestionBank().catch(err => console.warn("Question bank render notice:", err));
   } else {
     if (adminView) adminView.style.display = "none";
@@ -194,43 +197,26 @@ function updateTeacherUI(shouldScroll = false) {
 // ----------------------------------------------------------------------------
 // 3. KPI METRICS CALCULATOR
 // ----------------------------------------------------------------------------
-function updateKpiMetrics(submissions = [], questions = []) {
+function updateKpiMetrics() {
   const kpiTotalAttempts = document.getElementById("kpiTotalAttempts");
   const kpiAvgScore = document.getElementById("kpiAvgScore");
   const kpiTotalQuestions = document.getElementById("kpiTotalQuestions");
-  const kpiTopLevel = document.getElementById("kpiTopLevel");
+  const kpiRegisteredStudents = document.getElementById("kpiRegisteredStudents");
 
-  if (kpiTotalAttempts) kpiTotalAttempts.textContent = submissions.length;
+  if (kpiTotalAttempts) kpiTotalAttempts.textContent = cachedSubmissions.length;
 
   if (kpiAvgScore) {
-    if (submissions.length === 0) {
+    if (cachedSubmissions.length === 0) {
       kpiAvgScore.textContent = "0%";
     } else {
-      const sumPct = submissions.reduce((acc, curr) => acc + (curr.percentage || Math.round((curr.score / curr.totalQuestions) * 100)), 0);
-      const avg = Math.round(sumPct / submissions.length);
+      const sumPct = cachedSubmissions.reduce((acc, curr) => acc + (curr.percentage || Math.round((curr.score / curr.totalQuestions) * 100)), 0);
+      const avg = Math.round(sumPct / cachedSubmissions.length);
       kpiAvgScore.textContent = `${avg}%`;
     }
   }
 
-  if (kpiTotalQuestions) kpiTotalQuestions.textContent = questions.length;
-
-  if (kpiTopLevel) {
-    if (submissions.length === 0) {
-      kpiTopLevel.textContent = "SSS";
-    } else {
-      const counts = {};
-      submissions.forEach(s => { counts[s.level] = (counts[s.level] || 0) + 1; });
-      let topCode = "sss";
-      let maxCount = 0;
-      Object.keys(counts).forEach(lvl => {
-        if (counts[lvl] > maxCount) {
-          maxCount = counts[lvl];
-          topCode = lvl;
-        }
-      });
-      kpiTopLevel.textContent = getLevelLabelShort(topCode);
-    }
-  }
+  if (kpiTotalQuestions) kpiTotalQuestions.textContent = cachedQuestions.length;
+  if (kpiRegisteredStudents) kpiRegisteredStudents.textContent = cachedStudents.length;
 }
 
 // ----------------------------------------------------------------------------
@@ -270,7 +256,6 @@ function setupLiveMcqPreview() {
     if (optC && previewC) previewC.querySelector("span:last-child").textContent = optC.value.trim() || "Option C text";
     if (optD && previewD) previewD.querySelector("span:last-child").textContent = optD.value.trim() || "Option D text";
 
-    // Radio selection highlight
     const radios = document.querySelectorAll("input[name='correctAnswer']");
     radios.forEach((r, idx) => {
       const targetPill = [previewA, previewB, previewC, previewD][idx];
@@ -301,21 +286,28 @@ function setupLiveMcqPreview() {
 }
 
 // ----------------------------------------------------------------------------
-// 5. TEACHER DASHBOARD PANELS (Submissions, Creator, Question Bank)
+// 5. TEACHER DASHBOARD PANELS (Submissions, Roster, Creator, Question Bank)
 // ----------------------------------------------------------------------------
 function setupTeacherAdminPanels() {
   const tabSubmissions = document.getElementById("adminTabSubmissionsBtn");
+  const tabRoster = document.getElementById("adminTabRosterBtn");
   const tabCreate = document.getElementById("adminTabCreateBtn");
   const tabBank = document.getElementById("adminTabBankBtn");
 
   const panelSubmissions = document.getElementById("adminPanelSubmissions");
+  const panelRoster = document.getElementById("adminPanelRoster");
   const panelCreate = document.getElementById("adminPanelCreate");
   const panelBank = document.getElementById("adminPanelBank");
 
-  if (tabSubmissions && tabCreate && tabBank) {
+  if (tabSubmissions && tabRoster && tabCreate && tabBank) {
     tabSubmissions.addEventListener("click", () => {
       setActiveAdminTab(tabSubmissions, panelSubmissions);
       refreshTeacherSubmissionsTable();
+    });
+
+    tabRoster.addEventListener("click", () => {
+      setActiveAdminTab(tabRoster, panelRoster);
+      refreshTeacherRosterTable();
     });
 
     tabCreate.addEventListener("click", () => {
@@ -329,11 +321,11 @@ function setupTeacherAdminPanels() {
   }
 
   function setActiveAdminTab(activeTab, activePanel) {
-    [tabSubmissions, tabCreate, tabBank].forEach(t => t.classList.remove("active"));
-    [panelSubmissions, panelCreate, panelBank].forEach(p => p.style.display = "none");
+    [tabSubmissions, tabRoster, tabCreate, tabBank].forEach(t => t && t.classList.remove("active"));
+    [panelSubmissions, panelRoster, panelCreate, panelBank].forEach(p => p && (p.style.display = "none"));
 
-    activeTab.classList.add("active");
-    activePanel.style.display = "block";
+    if (activeTab) activeTab.classList.add("active");
+    if (activePanel) activePanel.style.display = "block";
   }
 
   // Refresh Submissions Button
@@ -354,6 +346,32 @@ function setupTeacherAdminPanels() {
   // Bank Search Input
   const bankSearchInput = document.getElementById("bankSearchInput");
   if (bankSearchInput) bankSearchInput.addEventListener("input", filterAndRenderQuestionBank);
+
+  // Register Student Form submit
+  const regStudentForm = document.getElementById("registerStudentForm");
+  if (regStudentForm) {
+    regStudentForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const name = document.getElementById("regStudentName").value.trim();
+      const level = document.getElementById("regStudentLevel").value;
+      const pin = document.getElementById("regStudentPin").value.trim();
+      const email = document.getElementById("regStudentEmail").value.trim();
+
+      const submitBtn = regStudentForm.querySelector("button[type='submit']");
+      submitBtn.disabled = true;
+
+      try {
+        await QuizService.saveStudentAccount({ name, level, pin, email });
+        alert(`🎓 Student account for "${name}" registered successfully!`);
+        regStudentForm.reset();
+        refreshTeacherRosterTable();
+      } catch (err) {
+        alert("Failed to register student: " + err.message);
+      } finally {
+        submitBtn.disabled = false;
+      }
+    });
+  }
 
   // MCQ Creator Form submit
   const mcqForm = document.getElementById("mcqCreatorForm");
@@ -457,6 +475,16 @@ function setupTeacherAdminPanels() {
     });
   }
 
+  // Close Diagnostics Breakdown Modal handler
+  const detailsModal = document.getElementById("submissionDetailsModal");
+  const closeDetailsBtn = document.getElementById("closeSubmissionDetailsModalBtn");
+  if (closeDetailsBtn && detailsModal) {
+    closeDetailsBtn.addEventListener("click", () => {
+      if (detailsModal.close) detailsModal.close();
+      else detailsModal.style.display = "none";
+    });
+  }
+
   // Bank filters
   document.querySelectorAll(".admin-bank-filter").forEach(btn => {
     btn.addEventListener("click", () => {
@@ -467,13 +495,55 @@ function setupTeacherAdminPanels() {
   });
 }
 
+// Render Registered Student Roster
+async function refreshTeacherRosterTable() {
+  const tbody = document.getElementById("studentRosterTableBody");
+  if (!tbody) return;
+
+  cachedStudents = await QuizService.getStudentAccounts();
+  updateKpiMetrics();
+
+  const countBadge = document.getElementById("studentRosterCount");
+  if (countBadge) countBadge.textContent = `${cachedStudents.length} Students`;
+
+  if (cachedStudents.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-muted); padding: 24px;">No registered students yet.</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = cachedStudents.map(std => `
+    <tr>
+      <td>
+        <strong>${escapeHTML(std.name)}</strong>
+        <div style="font-size: 0.78rem; color: var(--text-muted);">${escapeHTML(std.email || '')}</div>
+      </td>
+      <td><span class="qna-category-pill category-${std.level}">${getLevelLabel(std.level)}</span></td>
+      <td><code>${escapeHTML(std.pin || '1234')}</code></td>
+      <td>
+        <button class="btn-delete-student btn-delete-mcq" data-id="${std.id}">
+          <i class="fas fa-trash"></i>
+        </button>
+      </td>
+    </tr>
+  `).join("");
+
+  tbody.querySelectorAll(".btn-delete-student").forEach(btn => {
+    btn.addEventListener("click", async () => {
+      if (confirm("Remove this student from roster?")) {
+        await QuizService.deleteStudentAccount(btn.dataset.id);
+        refreshTeacherRosterTable();
+      }
+    });
+  });
+}
+
 // Render Teacher Student Results Table
 async function refreshTeacherSubmissionsTable() {
   const tbody = document.getElementById("studentSubmissionsTableBody");
   if (!tbody) return;
 
   cachedSubmissions = await QuizService.getSubmissions();
-  updateKpiMetrics(cachedSubmissions, cachedQuestions);
+  updateKpiMetrics();
   filterAndRenderSubmissions();
 }
 
@@ -497,7 +567,7 @@ function filterAndRenderSubmissions() {
   if (list.length === 0) {
     tbody.innerHTML = `
       <tr>
-        <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 30px;">
+        <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 30px;">
           No student trial submissions found matching filters.
         </td>
       </tr>
@@ -505,7 +575,7 @@ function filterAndRenderSubmissions() {
     return;
   }
 
-  tbody.innerHTML = list.map(sub => {
+  tbody.innerHTML = list.map((sub, index) => {
     const pct = sub.percentage || Math.round((sub.score / sub.totalQuestions) * 100);
     const progressColor = pct >= 80 ? '#10B981' : (pct >= 60 ? '#6366F1' : '#F43F5E');
     const badgeClass = pct >= 80 ? 'qna-badge-solved' : (pct >= 60 ? 'qna-badge-open' : 'category-calculus');
@@ -530,9 +600,91 @@ function filterAndRenderSubmissions() {
           </div>
         </td>
         <td style="color: var(--text-muted); font-size: 0.85rem;">${formatDate(sub.submittedAt)}</td>
+        <td>
+          <button class="btn btn-outline btn-sm btn-view-submission-details" data-index="${index}" style="padding: 4px 10px; font-size: 0.78rem;">
+            <i class="fas fa-search-plus"></i> View Breakdown
+          </button>
+        </td>
       </tr>
     `;
   }).join("");
+
+  // Bind View Breakdown click handlers
+  tbody.querySelectorAll(".btn-view-submission-details").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const index = parseInt(btn.dataset.index, 10);
+      const sub = list[index];
+      if (sub) openSubmissionDetailsModal(sub);
+    });
+  });
+}
+
+// Open Diagnostics Breakdown Modal (Passed vs Failed Questions)
+function openSubmissionDetailsModal(sub) {
+  const modal = document.getElementById("submissionDetailsModal");
+  if (!modal) return;
+
+  const headerSummary = document.getElementById("modalStudentHeaderSummary");
+  const listContainer = document.getElementById("modalQuestionBreakdownList");
+  const pct = sub.percentage || Math.round((sub.score / sub.totalQuestions) * 100);
+
+  if (headerSummary) {
+    headerSummary.innerHTML = `
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+        <div>
+          <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--text-main);">${escapeHTML(sub.studentName)}</h3>
+          <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">
+            Submitted on <strong>${formatDate(sub.submittedAt)}</strong> for <span class="qna-category-pill category-${sub.level}">${getLevelLabel(sub.level)}</span>
+          </div>
+        </div>
+
+        <div style="text-align: right;">
+          <div style="font-size: 1.6rem; font-weight: 800; color: var(--primary);">${sub.score} / ${sub.totalQuestions}</div>
+          <div style="font-size: 0.9rem; font-weight: 700; color: ${pct >= 80 ? '#10B981' : '#6366F1'};">${pct}% Score</div>
+        </div>
+      </div>
+    `;
+  }
+
+  if (listContainer) {
+    const answers = sub.detailedAnswers || [];
+    if (answers.length === 0) {
+      listContainer.innerHTML = `<div class="qna-empty-state"><p>Detailed question responses were not recorded for this trial.</p></div>`;
+    } else {
+      listContainer.innerHTML = answers.map((ans, i) => `
+        <div class="result-breakdown-card ${ans.isCorrect ? 'is-correct' : 'is-wrong'}">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <span style="font-size: 0.82rem; font-weight: 700; color: var(--text-muted);">Question ${i + 1}</span>
+            <span class="result-status-badge ${ans.isCorrect ? 'status-badge-correct' : 'status-badge-wrong'}">
+              <i class="fas ${ans.isCorrect ? 'fa-check-circle' : 'fa-times-circle'}"></i>
+              ${ans.isCorrect ? 'PASSED / CORRECT' : 'FAILED / INCORRECT'}
+            </span>
+          </div>
+
+          <h5 style="font-size: 0.98rem; font-weight: 700; color: var(--text-main); margin-bottom: 10px;">${escapeHTML(ans.questionText)}</h5>
+
+          <div class="breakdown-choice-box">
+            <div class="breakdown-choice-pill ${ans.isCorrect ? 'choice-user-correct' : 'choice-user-wrong'}">
+              <span><strong>Student Selected:</strong> ${escapeHTML(ans.selectedOption)}</span>
+              <i class="fas ${ans.isCorrect ? 'fa-check' : 'fa-times'}"></i>
+            </div>
+
+            ${!ans.isCorrect ? `
+              <div class="breakdown-choice-pill choice-actual-correct">
+                <span><strong>Correct Answer:</strong> ${escapeHTML(ans.correctOption)}</span>
+                <i class="fas fa-check-circle" style="color: #10B981;"></i>
+              </div>
+            ` : ''}
+          </div>
+
+          ${ans.explanation ? `<div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 8px;"><strong>Explanation:</strong> ${escapeHTML(ans.explanation)}</div>` : ''}
+        </div>
+      `).join("");
+    }
+  }
+
+  if (modal.showModal) modal.showModal();
+  else modal.style.display = "block";
 }
 
 // Render Question Bank Directory
@@ -541,7 +693,7 @@ async function refreshTeacherQuestionBank(filter = "all") {
   if (!container) return;
 
   cachedQuestions = await QuizService.getQuizzes("all");
-  updateKpiMetrics(cachedSubmissions, cachedQuestions);
+  updateKpiMetrics();
   filterAndRenderQuestionBank(filter);
 }
 
@@ -597,7 +749,6 @@ function filterAndRenderQuestionBank(activeFilter = "all") {
     </div>
   `).join("");
 
-  // Bind Edit Click Listeners
   const editModal = document.getElementById("editMcqModal");
   container.querySelectorAll(".btn-edit-mcq").forEach(btn => {
     btn.addEventListener("click", () => {
@@ -624,7 +775,6 @@ function filterAndRenderQuestionBank(activeFilter = "all") {
     });
   });
 
-  // Bind Delete Click Listeners
   container.querySelectorAll(".btn-delete-mcq").forEach(btn => {
     btn.addEventListener("click", async () => {
       const id = btn.dataset.id;
@@ -663,6 +813,7 @@ async function loadStudentQuiz(level) {
   studentQuestions = await QuizService.getQuizzes(level);
   currentQuestionIndex = 0;
   userScore = 0;
+  currentDetailedAnswers = [];
 
   document.getElementById("quizPlayView").style.display = "block";
   document.getElementById("quizResultView").style.display = "none";
@@ -736,6 +887,15 @@ function renderStudentQuestion() {
 
       optionBtns.forEach(b => b.style.pointerEvents = "none");
 
+      // Record detailed attempt response
+      currentDetailedAnswers.push({
+        questionText: q.question,
+        selectedOption: q.options[selectedIndex] || "No selection",
+        correctOption: q.options[q.correctIndex] || "Unknown",
+        isCorrect,
+        explanation: q.explanation || ""
+      });
+
       if (isCorrect) {
         userScore++;
         btn.classList.add("correct");
@@ -792,7 +952,8 @@ async function recordAndShowFinalResults() {
     studentName,
     level: currentStudentLevel,
     score: userScore,
-    totalQuestions: total
+    totalQuestions: total,
+    detailedAnswers: currentDetailedAnswers
   });
 
   const scoreText = document.getElementById("resultScoreText");
@@ -831,17 +992,6 @@ function getLevelLabel(code) {
     sat_igcse: "IGCSE / SAT Math"
   };
   return map[code] || "All Levels";
-}
-
-function getLevelLabelShort(code) {
-  const map = {
-    primary: "Primary",
-    jss: "JSS",
-    sss: "SSS",
-    waec: "WAEC",
-    sat_igcse: "SAT/IGCSE"
-  };
-  return map[code] || "SSS";
 }
 
 function escapeHTML(str) {

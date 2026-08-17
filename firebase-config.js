@@ -92,7 +92,7 @@ const SEED_QUIZZES = [
 ];
 
 // ----------------------------------------------------------------------------
-// SEED DATA: Default Student Submissions
+// SEED DATA: Default Student Submissions with Detailed Passed/Failed Breakdown
 // ----------------------------------------------------------------------------
 const SEED_SUBMISSIONS = [
   {
@@ -102,7 +102,12 @@ const SEED_SUBMISSIONS = [
     score: 4,
     totalQuestions: 5,
     percentage: 80,
-    submittedAt: new Date(Date.now() - 3600000 * 2).toISOString()
+    submittedAt: new Date(Date.now() - 3600000 * 2).toISOString(),
+    detailedAnswers: [
+      { questionText: "Find the roots of 2x² - 5x + 2 = 0", selectedOption: "x = 2 or x = 1/2", correctOption: "x = 2 or x = 1/2", isCorrect: true, explanation: "Factorize: (2x - 1)(x - 2) = 0." },
+      { questionText: "Evaluate log₁₀(1000) + log₁₀(0.01)", selectedOption: "1", correctOption: "1", isCorrect: true, explanation: "3 + (-2) = 1." },
+      { questionText: "What is 15 + (4 × 3)?", selectedOption: "57", correctOption: "27", isCorrect: false, explanation: "Follow BODMAS: 4 × 3 = 12, then 15 + 12 = 27." }
+    ]
   },
   {
     id: "sub_2",
@@ -111,17 +116,21 @@ const SEED_SUBMISSIONS = [
     score: 5,
     totalQuestions: 5,
     percentage: 100,
-    submittedAt: new Date(Date.now() - 3600000 * 5).toISOString()
-  },
-  {
-    id: "sub_3",
-    studentName: "Kenechukwu Nnamdi",
-    level: "jss",
-    score: 3,
-    totalQuestions: 4,
-    percentage: 75,
-    submittedAt: new Date(Date.now() - 86400000).toISOString()
+    submittedAt: new Date(Date.now() - 3600000 * 5).toISOString(),
+    detailedAnswers: [
+      { questionText: "Evaluate log₁₀(1000) + log₁₀(0.01)", selectedOption: "1", correctOption: "1", isCorrect: true, explanation: "3 + (-2) = 1." },
+      { questionText: "Solve for x: 4x - 7 = 17", selectedOption: "x = 6", correctOption: "x = 6", isCorrect: true, explanation: "4x = 24 -> x = 6." }
+    ]
   }
+];
+
+// ----------------------------------------------------------------------------
+// SEED DATA: Registered Students Roster
+// ----------------------------------------------------------------------------
+const SEED_STUDENTS = [
+  { id: "std_1", name: "Chinedu Okeke", email: "chinedu@student.com", level: "waec", pin: "1234", createdAt: new Date().toISOString() },
+  { id: "std_2", name: "Grace Eze", email: "grace@student.com", level: "sss", pin: "5678", createdAt: new Date().toISOString() },
+  { id: "std_3", name: "Kenechukwu Nnamdi", email: "kene@student.com", level: "jss", pin: "4321", createdAt: new Date().toISOString() }
 ];
 
 function getLocalQuizzes() {
@@ -148,6 +157,19 @@ function getLocalSubmissions() {
 
 function saveLocalSubmissions(items) {
   localStorage.setItem("chyma_student_submissions", JSON.stringify(items));
+}
+
+function getLocalStudents() {
+  const data = localStorage.getItem("chyma_registered_students");
+  if (!data) {
+    localStorage.setItem("chyma_registered_students", JSON.stringify(SEED_STUDENTS));
+    return SEED_STUDENTS;
+  }
+  try { return JSON.parse(data); } catch (e) { return SEED_STUDENTS; }
+}
+
+function saveLocalStudents(items) {
+  localStorage.setItem("chyma_registered_students", JSON.stringify(items));
 }
 
 // ----------------------------------------------------------------------------
@@ -264,7 +286,7 @@ export const QuizService = {
     saveLocalQuizzes(list);
   },
 
-  async saveSubmission({ studentName, level, score, totalQuestions }) {
+  async saveSubmission({ studentName, level, score, totalQuestions, detailedAnswers }) {
     const percentage = Math.round((score / totalQuestions) * 100);
     const submissionData = {
       studentName: studentName || "Anonymous Student",
@@ -272,6 +294,7 @@ export const QuizService = {
       score,
       totalQuestions,
       percentage,
+      detailedAnswers: detailedAnswers || [],
       submittedAt: new Date().toISOString()
     };
 
@@ -311,5 +334,61 @@ export const QuizService = {
     const localList = getLocalSubmissions();
     localList.sort((a, b) => new Date(b.submittedAt || 0) - new Date(a.submittedAt || 0));
     return localList;
+  },
+
+  // REGISTER STUDENT ACCOUNT SERVICES
+  async saveStudentAccount({ name, email, level, pin }) {
+    const studentData = {
+      name,
+      email: email || `${name.toLowerCase().replace(/\s+/g, '')}@student.com`,
+      level,
+      pin: pin || "1234",
+      createdAt: new Date().toISOString()
+    };
+
+    if (isFirebaseConfigured && db) {
+      try {
+        const docRef = await addDoc(collection(db, "registered_students"), {
+          ...studentData,
+          createdAt: serverTimestamp()
+        });
+        return docRef.id;
+      } catch (err) {
+        console.warn("Firestore student register notice, saving locally:", err);
+      }
+    }
+
+    const list = getLocalStudents();
+    const newItem = { id: "std_" + Date.now(), ...studentData };
+    list.unshift(newItem);
+    saveLocalStudents(list);
+    return newItem.id;
+  },
+
+  async getStudentAccounts() {
+    if (isFirebaseConfigured && db) {
+      try {
+        const qRef = collection(db, "registered_students");
+        const snapshot = await getDocs(qRef);
+        let list = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        if (list.length > 0) return list;
+      } catch (err) {
+        console.warn("Firestore students fetch notice:", err);
+      }
+    }
+    return getLocalStudents();
+  },
+
+  async deleteStudentAccount(id) {
+    if (isFirebaseConfigured && db) {
+      try {
+        await deleteDoc(doc(db, "registered_students", id));
+      } catch (err) {
+        console.warn("Firestore delete student notice:", err);
+      }
+    }
+    let list = getLocalStudents();
+    list = list.filter(item => item.id !== id);
+    saveLocalStudents(list);
   }
 };
