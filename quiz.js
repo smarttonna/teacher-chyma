@@ -1,7 +1,7 @@
 /**
  * ============================================================================
  * TEACHER CHYMA - ADVANCED QUIZ LMS & ADMIN SYSTEM (quiz.js)
- * Student Registration + Level-Based Quiz + Passed/Failed Diagnostics
+ * Anti-Cheating Shuffling (Questions & Options) + Level Prompt Modal
  * ============================================================================
  */
 
@@ -20,17 +20,28 @@ let cachedSubmissions = [];
 let cachedQuestions = [];
 let cachedStudents = [];
 
+// Generic Fisher-Yates Shuffle Utility
+function shuffleArray(arr) {
+  const cloned = [...arr];
+  for (let i = cloned.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [cloned[i], cloned[j]] = [cloned[j], cloned[i]];
+  }
+  return cloned;
+}
+
 function initQuizPage() {
   renderFirebaseStatusNotice();
   setupPasswordToggle();
   setupStudentNameFlow();
+  setupStudentLevelModal();
   setupTeacherAuth();
   setupTeacherAdminPanels();
   setupMobileSidebarDrawer();
   setupLiveMcqPreview();
   setupStudentLevelSelector();
 
-  // Load Quiz
+  // Load Quiz with dynamic shuffling
   loadStudentQuiz(currentStudentLevel);
 }
 
@@ -93,7 +104,7 @@ function setupMobileSidebarDrawer() {
 }
 
 // ----------------------------------------------------------------------------
-// 1. STUDENT NAME PROMPT FLOW
+// 1. STUDENT NAME & LEVEL SELECTION PROMPT FLOWS
 // ----------------------------------------------------------------------------
 function getStudentName() {
   return localStorage.getItem("chyma_student_name") || "";
@@ -146,6 +157,51 @@ function setupStudentNameFlow() {
       }
     });
   }
+}
+
+// STUDENT LEVEL SELECTION PROMPT MODAL
+function setupStudentLevelModal() {
+  const levelModal = document.getElementById("studentLevelModal");
+  const openBtn = document.getElementById("openLevelModalBtn");
+
+  if (!levelModal) return;
+
+  // Prompt automatically if level has not been explicitly chosen this session
+  const sessionChosen = sessionStorage.getItem("chyma_level_chosen");
+  if (!sessionChosen) {
+    setTimeout(() => {
+      if (levelModal.showModal) levelModal.showModal();
+      else levelModal.style.display = "block";
+    }, 200);
+  }
+
+  if (openBtn) {
+    openBtn.addEventListener("click", () => {
+      if (levelModal.showModal) levelModal.showModal();
+      else levelModal.style.display = "block";
+    });
+  }
+
+  const selectBtns = levelModal.querySelectorAll(".modal-level-select-btn");
+  selectBtns.forEach(btn => {
+    btn.addEventListener("click", () => {
+      const level = btn.dataset.level || "sss";
+      sessionStorage.setItem("chyma_level_chosen", level);
+      currentStudentLevel = level;
+
+      // Update level tab UI
+      const levelBtns = document.querySelectorAll(".student-level-btn");
+      levelBtns.forEach(b => {
+        if (b.dataset.level === level) b.classList.add("active");
+        else b.classList.remove("active");
+      });
+
+      if (levelModal.close) levelModal.close();
+      else levelModal.style.display = "none";
+
+      loadStudentQuiz(level);
+    });
+  });
 }
 
 // ----------------------------------------------------------------------------
@@ -850,7 +906,7 @@ function filterAndRenderQuestionBank(activeFilter = "all") {
     <div class="admin-mcq-card" data-id="${q.id}">
       <div class="admin-mcq-header">
         <div style="display: flex; align-items: center; gap: 10px;">
-          <input type="checkbox" class="mcq-select-checkbox" data-id="${q.id}" style="width: 18px; height: 18px; cursor: pointer;" />
+          <input type="checkbox" class="mcq-select-checkbox" data-id="${q.id}" />
           <span class="qna-category-pill category-${q.level}">${getLevelLabel(q.level)}</span>
         </div>
         <div style="display: flex; gap: 8px;">
@@ -876,7 +932,6 @@ function filterAndRenderQuestionBank(activeFilter = "all") {
     </div>
   `).join("");
 
-  // Bind checkbox selection change listeners
   container.querySelectorAll(".mcq-select-checkbox").forEach(cb => {
     cb.addEventListener("change", updateSelectedMcqsCounter);
   });
@@ -920,7 +975,7 @@ function filterAndRenderQuestionBank(activeFilter = "all") {
 }
 
 // ----------------------------------------------------------------------------
-// 6. STUDENT QUIZ ENGINE & AUTOMATIC RESULT RECORDING
+// 6. STUDENT QUIZ ENGINE & DYNAMIC RUNTIME SHUFFLING
 // ----------------------------------------------------------------------------
 function setupStudentLevelSelector() {
   const levelBtns = document.querySelectorAll(".student-level-btn");
@@ -942,13 +997,20 @@ function setupStudentLevelSelector() {
 }
 
 async function loadStudentQuiz(level) {
-  studentQuestions = await QuizService.getQuizzes(level);
+  const rawQuestions = await QuizService.getQuizzes(level);
+  
+  // Anti-Cheating Step 1: Dynamically Shuffle Question Sequence on Every Load / Retake
+  studentQuestions = shuffleArray(rawQuestions);
+
   currentQuestionIndex = 0;
   userScore = 0;
   currentDetailedAnswers = [];
 
-  document.getElementById("quizPlayView").style.display = "block";
-  document.getElementById("quizResultView").style.display = "none";
+  const playView = document.getElementById("quizPlayView");
+  const resultView = document.getElementById("quizResultView");
+
+  if (playView) playView.style.display = "block";
+  if (resultView) resultView.style.display = "none";
 
   renderStudentQuestion();
 }
@@ -968,7 +1030,20 @@ function renderStudentQuestion() {
     return;
   }
 
-  const q = studentQuestions[currentQuestionIndex];
+  const rawQ = studentQuestions[currentQuestionIndex];
+
+  // Anti-Cheating Step 2: Dynamically Permute Answer Options & Track Correct Choice
+  const correctText = rawQ.options[rawQ.correctIndex];
+  const shuffledOptions = shuffleArray(rawQ.options);
+  const newCorrectIndex = shuffledOptions.indexOf(correctText);
+
+  // Active question state for rendering
+  const activeQ = {
+    ...rawQ,
+    options: shuffledOptions,
+    correctIndex: newCorrectIndex
+  };
+
   const progressPct = ((currentQuestionIndex + 1) / studentQuestions.length) * 100;
 
   playView.innerHTML = `
@@ -985,11 +1060,11 @@ function renderStudentQuestion() {
 
     <div class="quiz-question-box">
       <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 20px; line-height: 1.5; color: var(--text-main);">
-        ${escapeHTML(q.question)}
+        ${escapeHTML(activeQ.question)}
       </h3>
 
       <div class="quiz-options-grid">
-        ${q.options.map((opt, idx) => `
+        ${activeQ.options.map((opt, idx) => `
           <button class="quiz-option-btn student-opt-btn" data-index="${idx}">
             <span><strong>${String.fromCharCode(65 + idx)}:</strong> ${escapeHTML(opt)}</span>
             <i class="far fa-circle"></i>
@@ -1015,17 +1090,17 @@ function renderStudentQuestion() {
   optionBtns.forEach(btn => {
     btn.addEventListener("click", () => {
       const selectedIndex = parseInt(btn.dataset.index, 10);
-      const isCorrect = selectedIndex === q.correctIndex;
+      const isCorrect = selectedIndex === activeQ.correctIndex;
 
       optionBtns.forEach(b => b.style.pointerEvents = "none");
 
-      // Record detailed attempt response
+      // Record detailed attempt response with dynamically shuffled choice text
       currentDetailedAnswers.push({
-        questionText: q.question,
-        selectedOption: q.options[selectedIndex] || "No selection",
-        correctOption: q.options[q.correctIndex] || "Unknown",
+        questionText: activeQ.question,
+        selectedOption: activeQ.options[selectedIndex] || "No selection",
+        correctOption: activeQ.options[activeQ.correctIndex] || "Unknown",
         isCorrect,
-        explanation: q.explanation || ""
+        explanation: activeQ.explanation || ""
       });
 
       if (isCorrect) {
@@ -1037,12 +1112,12 @@ function renderStudentQuestion() {
         feedbackBox.className = "quiz-feedback show";
         feedbackBox.style.backgroundColor = "rgba(16, 185, 129, 0.12)";
         feedbackBox.style.color = "#065F46";
-        feedbackBox.innerHTML = `<strong><i class="fas fa-check-circle"></i> Correct!</strong> ${escapeHTML(q.explanation || '')}`;
+        feedbackBox.innerHTML = `<strong><i class="fas fa-check-circle"></i> Correct!</strong> ${escapeHTML(activeQ.explanation || '')}`;
       } else {
         btn.classList.add("wrong");
         btn.querySelector("i").className = "fas fa-times-circle";
 
-        const correctBtn = optionBtns[q.correctIndex];
+        const correctBtn = optionBtns[activeQ.correctIndex];
         if (correctBtn) {
           correctBtn.classList.add("correct");
           correctBtn.querySelector("i").className = "fas fa-check-circle";
@@ -1052,7 +1127,7 @@ function renderStudentQuestion() {
         feedbackBox.className = "quiz-feedback show";
         feedbackBox.style.backgroundColor = "rgba(244, 63, 94, 0.12)";
         feedbackBox.style.color = "#991B1B";
-        feedbackBox.innerHTML = `<strong><i class="fas fa-info-circle"></i> Incorrect.</strong> Correct answer is <strong>Option ${String.fromCharCode(65 + q.correctIndex)}</strong>. ${escapeHTML(q.explanation || '')}`;
+        feedbackBox.innerHTML = `<strong><i class="fas fa-info-circle"></i> Incorrect.</strong> Correct answer is <strong>Option ${String.fromCharCode(65 + activeQ.correctIndex)}: ${escapeHTML(activeQ.options[activeQ.correctIndex])}</strong>. ${escapeHTML(activeQ.explanation || '')}`;
       }
 
       nextBtn.style.display = "inline-flex";

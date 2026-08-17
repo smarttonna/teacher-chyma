@@ -3,11 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-  <title>Student Math Quiz Portal | Teacher Chyma - Chidimma Mary</title>
+  <title>Student Quiz Hub | Teacher Chyma - Mathematics Educator</title>
 
   <!-- SEO Meta Tags -->
-  <meta name="description" content="Interactive level-based Mathematics Quiz Hub for students by Teacher Chyma. Test your skills in Primary, JSS, SSS, WAEC, NECO, IGCSE, and SAT math!">
-  <meta name="keywords" content="Math Quiz, WAEC Prep, SAT Math Quiz, Teacher Chyma, Online Tutoring">
+  <meta name="description" content="Take level-based Mathematics practice quizzes for Primary, JSS, SSS, WAEC/NECO, and IGCSE/SAT Math with instant scoring and solutions.">
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -24,10 +23,10 @@
 
   <!-- Floating Background Mathematical Symbols -->
   <div class="bg-math-patterns">
-    <div class="math-symbol" style="top: 15%; left: 6%; font-size: 3rem; animation-delay: 0s;">π</div>
-    <div class="math-symbol" style="top: 25%; right: 8%; font-size: 3rem; animation-delay: -2s;">√x</div>
-    <div class="math-symbol" style="top: 55%; left: 4%; font-size: 3.5rem; animation-delay: -4s;">∑</div>
-    <div class="math-symbol" style="top: 70%; right: 6%; font-size: 3rem; animation-delay: -1s;">Δ</div>
+    <div class="math-symbol" style="top: 10%; left: 8%; font-size: 3rem; animation-delay: 0s;">π</div>
+    <div class="math-symbol" style="top: 20%; right: 10%; font-size: 3.5rem; animation-delay: -2s;">√x</div>
+    <div class="math-symbol" style="top: 60%; left: 5%; font-size: 4rem; animation-delay: -4s;">∑</div>
+    <div class="math-symbol" style="top: 75%; right: 8%; font-size: 3rem; animation-delay: -1s;">Δ</div>
   </div>
 
   <!-- ------------------------------------------------------------------------
@@ -44,9 +43,8 @@
 
       <nav class="nav-links" id="navLinks">
         <a href="index.html" class="nav-link"><i class="fas fa-home"></i> Home</a>
-        <a href="index.html#about" class="nav-link">About Educator</a>
-        <a href="index.html#specializations" class="nav-link">Curriculum</a>
-        <a href="teacher.html" class="nav-link"><i class="fas fa-lock"></i> Teacher Portal</a>
+        <a href="quiz.html" class="nav-link active"><i class="fas fa-graduation-cap"></i> Student Quiz Hub</a>
+        <a href="teacher.html" class="nav-link"><i class="fas fa-user-shield"></i> Teacher Admin Portal</a>
         <a href="index.html#contact" class="nav-link">Contact</a>
       </nav>
 
@@ -55,7 +53,7 @@
           <i class="fas fa-moon"></i>
         </button>
         <a href="teacher.html" class="btn btn-outline btn-sm">
-          <i class="fas fa-chalkboard-teacher"></i> Teacher Login
+          <i class="fas fa-key"></i> Teacher Login
         </a>
         <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle Navigation">
           <i class="fas fa-bars"></i>
@@ -65,41 +63,45 @@
   </header>
 
   <!-- ------------------------------------------------------------------------
-       STUDENT QUIZ LMS HUB
+       STUDENT QUIZ HUB
        ------------------------------------------------------------------------ -->
   <main class="section" style="padding-top: 100px;">
     <div class="container">
 
-      <!-- Header Banner -->
       <div class="section-header text-center" style="max-width: 760px; margin: 0 auto 32px auto;">
         <div class="hero-badge" style="margin: 0 auto 12px auto;">
           <i class="fas fa-graduation-cap"></i>
-          <span>Student Quiz Portal</span>
+          <span>Interactive Student Portal</span>
         </div>
         <h2 class="section-title">
-          Math <span class="gradient-text">Quiz LMS</span> Hub
+          Mathematics <span class="gradient-text">Practice Quiz Hub</span>
         </h2>
         <p class="section-subtitle">
-          Select your grade level to practice multiple-choice questions. Your scores will be recorded and reviewed by Teacher Chyma!
+          Test your math skills across grade levels. Each trial features dynamically randomized questions and answer choices!
         </p>
       </div>
 
-      <!-- Student Practice Quiz Section -->
-      <div class="quiz-wrapper" id="studentQuizWrapper">
+      <!-- Main Quiz Player Card -->
+      <div class="quiz-creator-card" style="max-width: 780px; margin: 0 auto 40px auto; padding: 32px 28px; box-shadow: var(--shadow-lg);">
 
-        <!-- Student Name Bar / Change Name Trigger -->
-        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; padding-bottom: 14px; border-bottom: 1px solid var(--border-color);">
-          <div style="display: flex; align-items: center; gap: 10px;">
-            <div class="qna-avatar" id="studentAvatarIcon">S</div>
+        <!-- Student Profile Header -->
+        <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 20px; border-bottom: 1px solid var(--border-color); margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div class="qna-avatar" id="studentAvatarIcon" style="width: 44px; height: 44px; font-size: 1.1rem; background: var(--gradient-primary); color: #FFF;">S</div>
             <div>
-              <div style="font-size: 0.8rem; color: var(--text-muted);">Student Participant</div>
-              <div style="font-weight: 700; font-size: 1rem; color: var(--text-main);" id="displayStudentName">Guest Student</div>
+              <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">STUDENT PROFILE</div>
+              <div style="font-size: 1.1rem; font-weight: 700; color: var(--text-main);" id="displayStudentName">Guest Student</div>
             </div>
           </div>
 
-          <button class="btn btn-outline btn-sm" id="changeStudentNameBtn">
-            <i class="fas fa-edit"></i> Change Name
-          </button>
+          <div style="display: flex; gap: 8px;">
+            <button class="btn btn-outline btn-sm" id="openLevelModalBtn">
+              <i class="fas fa-layer-group"></i> Change Test Level
+            </button>
+            <button class="btn btn-outline btn-sm" id="changeStudentNameBtn">
+              <i class="fas fa-edit"></i> Change Name
+            </button>
+          </div>
         </div>
 
         <!-- Grade Level Selector Tabs -->
@@ -123,7 +125,7 @@
           
           <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
             <button class="btn btn-secondary" id="quizRestartBtn">
-              <i class="fas fa-redo"></i> Retake Quiz
+              <i class="fas fa-redo"></i> Retake Quiz (New Shuffled Order)
             </button>
             <a href="index.html#contact" class="btn btn-primary">
               <i class="fas fa-calendar-check"></i> Book Session with Teacher Chyma
@@ -135,6 +137,47 @@
 
     </div>
   </main>
+
+  <!-- ------------------------------------------------------------------------
+       STUDENT TEST LEVEL SELECTION MODAL DIALOG
+       ------------------------------------------------------------------------ -->
+  <dialog id="studentLevelModal" class="qna-dialog" style="max-width: 480px;">
+    <div class="qna-modal-header">
+      <h3><i class="fas fa-layer-group" style="color: var(--primary);"></i> Select Math Test Level</h3>
+    </div>
+    <div class="qna-modal-body text-center">
+      <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 20px;">
+        Which Mathematics Test are you taking today? Choose your grade level to start your trial quiz:
+      </p>
+
+      <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px;">
+        <button class="btn btn-outline modal-level-select-btn" data-level="primary" style="justify-content: flex-start; padding: 12px 16px; width: 100%;">
+          <i class="fas fa-child" style="color: var(--accent-amber); font-size: 1.1rem; width: 24px;"></i>
+          <span style="font-weight: 700;">Primary 4 - 6 Math Test</span>
+        </button>
+
+        <button class="btn btn-outline modal-level-select-btn" data-level="jss" style="justify-content: flex-start; padding: 12px 16px; width: 100%;">
+          <i class="fas fa-book-open" style="color: var(--accent-emerald); font-size: 1.1rem; width: 24px;"></i>
+          <span style="font-weight: 700;">Junior Secondary (JSS) Test</span>
+        </button>
+
+        <button class="btn btn-outline modal-level-select-btn" data-level="sss" style="justify-content: flex-start; padding: 12px 16px; width: 100%;">
+          <i class="fas fa-square-root-variable" style="color: var(--primary); font-size: 1.1rem; width: 24px;"></i>
+          <span style="font-weight: 700;">Senior Secondary (SSS) Test</span>
+        </button>
+
+        <button class="btn btn-outline modal-level-select-btn" data-level="waec" style="justify-content: flex-start; padding: 12px 16px; width: 100%;">
+          <i class="fas fa-award" style="color: var(--accent-purple); font-size: 1.1rem; width: 24px;"></i>
+          <span style="font-weight: 700;">WAEC / NECO Exam Prep</span>
+        </button>
+
+        <button class="btn btn-outline modal-level-select-btn" data-level="sat_igcse" style="justify-content: flex-start; padding: 12px 16px; width: 100%;">
+          <i class="fas fa-globe" style="color: #0EA5E9; font-size: 1.1rem; width: 24px;"></i>
+          <span style="font-weight: 700;">IGCSE / SAT Math Test</span>
+        </button>
+      </div>
+    </div>
+  </dialog>
 
   <!-- ------------------------------------------------------------------------
        STUDENT NAME ENTRY MODAL DIALOG
