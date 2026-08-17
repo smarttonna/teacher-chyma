@@ -1,0 +1,310 @@
+/**
+ * ============================================================================
+ * TEACHER CHYMA - FIREBASE CONFIGURATION & QUIZ DATA SERVICE
+ * ============================================================================
+ */
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { 
+  getFirestore, collection, addDoc, getDocs, doc, deleteDoc, updateDoc,
+  query, where, orderBy, serverTimestamp 
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+// Your Actual Live Firebase Credentials (TeacherChyma project)
+const firebaseConfig = {
+  apiKey: "AIzaSyBdVwnFW3mKYXGjVpQEuLKagIpIjRKY03A",
+  authDomain: "teacherchyma-db300.firebaseapp.com",
+  projectId: "teacherchyma-db300",
+  storageBucket: "teacherchyma-db300.firebasestorage.app",
+  messagingSenderId: "1095428841790",
+  appId: "1:1095428841790:web:5dbb5ca0cb83e9f812cc6f",
+  measurementId: "G-HSKRSKGF8N"
+};
+
+export const isFirebaseConfigured = Boolean(
+  firebaseConfig.apiKey && 
+  firebaseConfig.apiKey !== "YOUR_FIREBASE_API_KEY" &&
+  firebaseConfig.projectId !== "YOUR_PROJECT_ID"
+);
+
+let db = null;
+if (isFirebaseConfigured) {
+  try {
+    const app = initializeApp(firebaseConfig);
+    db = getFirestore(app);
+  } catch (err) {
+    console.warn("Firebase init notice:", err);
+  }
+}
+
+// ----------------------------------------------------------------------------
+// SEED DATA: Default Quizzes
+// ----------------------------------------------------------------------------
+const SEED_QUIZZES = [
+  {
+    id: "seed_p1",
+    level: "primary",
+    question: "What is 15 + (4 × 3)?",
+    options: ["57", "27", "32", "24"],
+    correctIndex: 1,
+    explanation: "Follow BODMAS: Multiply first (4 × 3 = 12), then add (15 + 12 = 27)."
+  },
+  {
+    id: "seed_p2",
+    level: "primary",
+    question: "A rectangle has length 8 cm and width 5 cm. What is its perimeter?",
+    options: ["40 cm", "26 cm", "13 cm", "30 cm"],
+    correctIndex: 1,
+    explanation: "Perimeter = 2 × (8 + 5) = 26 cm."
+  },
+  {
+    id: "seed_j1",
+    level: "jss",
+    question: "Solve for x: 4x - 7 = 17",
+    options: ["x = 4", "x = 6", "x = 8", "x = 5"],
+    correctIndex: 1,
+    explanation: "Add 7: 4x = 24. Divide by 4: x = 6."
+  },
+  {
+    id: "seed_s1",
+    level: "sss",
+    question: "Evaluate log₁₀(1000) + log₁₀(0.01)",
+    options: ["1", "2", "3", "5"],
+    correctIndex: 0,
+    explanation: "log₁₀(1000) = 3 and log₁₀(0.01) = -2. So 3 + (-2) = 1."
+  },
+  {
+    id: "seed_w1",
+    level: "waec",
+    question: "Find the roots of 2x² - 5x + 2 = 0",
+    options: ["x = 2 or x = 1/2", "x = -2 or x = -1/2", "x = 4 or x = 1", "x = 3"],
+    correctIndex: 0,
+    explanation: "Factorize: (2x - 1)(x - 2) = 0. So x = 1/2 or x = 2."
+  },
+  {
+    id: "seed_sat1",
+    level: "sat_igcse",
+    question: "If sin(A) = 3/5 in right triangle ABC, what is cos(B)?",
+    options: ["3/5", "4/5", "5/3", "4/3"],
+    correctIndex: 0,
+    explanation: "Complementary angle rule: cos(B) = sin(90° - B) = sin(A) = 3/5."
+  }
+];
+
+// ----------------------------------------------------------------------------
+// SEED DATA: Default Student Submissions
+// ----------------------------------------------------------------------------
+const SEED_SUBMISSIONS = [
+  {
+    id: "sub_1",
+    studentName: "Chinedu Okeke",
+    level: "waec",
+    score: 4,
+    totalQuestions: 5,
+    percentage: 80,
+    submittedAt: new Date(Date.now() - 3600000 * 2).toISOString()
+  },
+  {
+    id: "sub_2",
+    studentName: "Grace Eze",
+    level: "sss",
+    score: 5,
+    totalQuestions: 5,
+    percentage: 100,
+    submittedAt: new Date(Date.now() - 3600000 * 5).toISOString()
+  },
+  {
+    id: "sub_3",
+    studentName: "Kenechukwu Nnamdi",
+    level: "jss",
+    score: 3,
+    totalQuestions: 4,
+    percentage: 75,
+    submittedAt: new Date(Date.now() - 86400000).toISOString()
+  }
+];
+
+function getLocalQuizzes() {
+  const data = localStorage.getItem("chyma_quiz_items");
+  if (!data) {
+    localStorage.setItem("chyma_quiz_items", JSON.stringify(SEED_QUIZZES));
+    return SEED_QUIZZES;
+  }
+  try { return JSON.parse(data); } catch (e) { return SEED_QUIZZES; }
+}
+
+function saveLocalQuizzes(items) {
+  localStorage.setItem("chyma_quiz_items", JSON.stringify(items));
+}
+
+function getLocalSubmissions() {
+  const data = localStorage.getItem("chyma_student_submissions");
+  if (!data) {
+    localStorage.setItem("chyma_student_submissions", JSON.stringify(SEED_SUBMISSIONS));
+    return SEED_SUBMISSIONS;
+  }
+  try { return JSON.parse(data); } catch (e) { return SEED_SUBMISSIONS; }
+}
+
+function saveLocalSubmissions(items) {
+  localStorage.setItem("chyma_student_submissions", JSON.stringify(items));
+}
+
+// ----------------------------------------------------------------------------
+// EXPORTED SERVICE
+// ----------------------------------------------------------------------------
+export const QuizService = {
+  verifyTeacher(passcode) {
+    const input = (passcode || "").trim().toLowerCase();
+    const isTeacher = (input === "chyma2026" || input === "teacherchyma@gmail.com");
+    if (isTeacher) {
+      localStorage.setItem("chyma_teacher_logged_in", "true");
+      return true;
+    }
+    return false;
+  },
+
+  isLoggedIn() {
+    return localStorage.getItem("chyma_teacher_logged_in") === "true";
+  },
+
+  logout() {
+    localStorage.removeItem("chyma_teacher_logged_in");
+  },
+
+  async getQuizzes(level = "all") {
+    if (isFirebaseConfigured && db) {
+      try {
+        const qRef = collection(db, "quizzes");
+        const queryRef = level === "all" ? qRef : query(qRef, where("level", "==", level));
+        const snapshot = await getDocs(queryRef);
+        const list = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        if (list.length > 0) return list;
+      } catch (err) {
+        console.warn("Firestore quiz fetch notice, using local cache:", err);
+      }
+    }
+    const all = getLocalQuizzes();
+    return level === "all" ? all : all.filter(item => item.level === level);
+  },
+
+  async createQuiz({ level, question, options, correctIndex, explanation }) {
+    if (isFirebaseConfigured && db) {
+      try {
+        const docRef = await addDoc(collection(db, "quizzes"), {
+          level,
+          question,
+          options,
+          correctIndex,
+          explanation: explanation || "",
+          createdAt: serverTimestamp()
+        });
+        return docRef.id;
+      } catch (err) {
+        console.warn("Firestore write notice, using local storage:", err);
+      }
+    }
+    const list = getLocalQuizzes();
+    const newItem = {
+      id: "quiz_" + Date.now(),
+      level,
+      question,
+      options,
+      correctIndex,
+      explanation: explanation || ""
+    };
+    list.unshift(newItem);
+    saveLocalQuizzes(list);
+    return newItem.id;
+  },
+
+  async updateQuiz(id, { level, question, options, correctIndex, explanation }) {
+    if (isFirebaseConfigured && db) {
+      try {
+        const docRef = doc(db, "quizzes", id);
+        await updateDoc(docRef, {
+          level,
+          question,
+          options,
+          correctIndex,
+          explanation: explanation || ""
+        });
+        return true;
+      } catch (err) {
+        console.warn("Firestore update notice:", err);
+      }
+    }
+    let list = getLocalQuizzes();
+    const index = list.findIndex(item => item.id === id);
+    if (index !== -1) {
+      list[index] = {
+        ...list[index],
+        level,
+        question,
+        options,
+        correctIndex,
+        explanation: explanation || ""
+      };
+      saveLocalQuizzes(list);
+      return true;
+    }
+    return false;
+  },
+
+  async deleteQuiz(id) {
+    if (isFirebaseConfigured && db) {
+      try {
+        await deleteDoc(doc(db, "quizzes", id));
+      } catch (err) {
+        console.warn("Firestore delete notice:", err);
+      }
+    }
+    let list = getLocalQuizzes();
+    list = list.filter(item => item.id !== id);
+    saveLocalQuizzes(list);
+  },
+
+  async saveSubmission({ studentName, level, score, totalQuestions }) {
+    const percentage = Math.round((score / totalQuestions) * 100);
+    const submissionData = {
+      studentName: studentName || "Anonymous Student",
+      level,
+      score,
+      totalQuestions,
+      percentage,
+      submittedAt: new Date().toISOString()
+    };
+
+    if (isFirebaseConfigured && db) {
+      try {
+        const docRef = await addDoc(collection(db, "student_submissions"), {
+          ...submissionData,
+          createdAt: serverTimestamp()
+        });
+        return docRef.id;
+      } catch (err) {
+        console.warn("Firestore submission notice, saving locally:", err);
+      }
+    }
+
+    const list = getLocalSubmissions();
+    const newItem = { id: "sub_" + Date.now(), ...submissionData };
+    list.unshift(newItem);
+    saveLocalSubmissions(list);
+    return newItem.id;
+  },
+
+  async getSubmissions() {
+    if (isFirebaseConfigured && db) {
+      try {
+        const qRef = query(collection(db, "student_submissions"), orderBy("createdAt", "desc"));
+        const snapshot = await getDocs(qRef);
+        const list = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        if (list.length > 0) return list;
+      } catch (err) {
+        console.warn("Firestore submissions fetch notice:", err);
+      }
+    }
+    return getLocalSubmissions();
+  }
+};

@@ -193,9 +193,40 @@ const QUIZ_DATA = {
   ]
 };
 
-let currentLevel = 'secondary';
+let currentLevel = 'sss';
 let currentQuestionIndex = 0;
 let userScore = 0;
+let currentQuestionsList = [];
+
+function getActiveQuizQuestions(level) {
+  const localData = localStorage.getItem("teacher_chyma_quiz_data");
+  let allQuizzes = [];
+  if (localData) {
+    try { allQuizzes = JSON.parse(localData); } catch (e) { allQuizzes = []; }
+  }
+
+  // Fallback map if localQuizzes is empty
+  let filtered = allQuizzes.filter(q => q.level === level);
+  if (filtered.length === 0) {
+    if (QUIZ_DATA[level]) {
+      return QUIZ_DATA[level].map((q, idx) => ({
+        questionText: q.question,
+        options: q.options,
+        correctAnswerIndex: q.correct,
+        explanation: q.explanation
+      }));
+    }
+    return [
+      {
+        questionText: "What is 15 + (4 × 3)?",
+        options: ["57", "27", "32", "24"],
+        correctAnswerIndex: 1,
+        explanation: "Following BODMAS: Multiply first (4 × 3 = 12), then add (15 + 12 = 27)."
+      }
+    ];
+  }
+  return filtered;
+}
 
 function initQuizGame() {
   const levelBtns = document.querySelectorAll('.quiz-level-btn');
@@ -203,7 +234,7 @@ function initQuizGame() {
     btn.addEventListener('click', (e) => {
       levelBtns.forEach(b => b.classList.remove('active'));
       e.target.classList.add('active');
-      currentLevel = e.target.dataset.level;
+      currentLevel = e.target.dataset.level || 'sss';
       resetQuiz();
     });
   });
@@ -214,19 +245,26 @@ function initQuizGame() {
   const restartBtn = document.getElementById('quizRestartBtn');
   if (restartBtn) restartBtn.addEventListener('click', resetQuiz);
 
-  renderQuestion();
+  document.addEventListener("quizzesUpdated", () => {
+    resetQuiz();
+  });
+
+  resetQuiz();
 }
 
 function resetQuiz() {
   currentQuestionIndex = 0;
   userScore = 0;
+  currentQuestionsList = getActiveQuizQuestions(currentLevel);
+
   document.getElementById('quizPlayView').style.display = 'block';
   document.getElementById('quizResultView').style.display = 'none';
   renderQuestion();
 }
 
 function renderQuestion() {
-  const questions = QUIZ_DATA[currentLevel];
+  const questions = currentQuestionsList;
+  if (!questions || questions.length === 0) return;
   const q = questions[currentQuestionIndex];
 
   const progressFill = document.getElementById('quizProgressFill');
@@ -240,7 +278,10 @@ function renderQuestion() {
   }
 
   const qText = document.getElementById('quizQuestionText');
-  if (qText) qText.innerText = q.question;
+  if (qText) {
+    qText.className = 'quiz-question-text qna-math-render';
+    qText.innerHTML = q.questionText || q.question;
+  }
 
   const optionsGrid = document.getElementById('quizOptionsGrid');
   const feedbackBox = document.getElementById('quizFeedbackBox');
@@ -254,12 +295,27 @@ function renderQuestion() {
 
   if (optionsGrid) {
     optionsGrid.innerHTML = '';
+    const correctIdx = typeof q.correctAnswerIndex === 'number' ? q.correctAnswerIndex : q.correct;
+
     q.options.forEach((optText, index) => {
       const btn = document.createElement('button');
-      btn.className = 'quiz-option-btn';
-      btn.innerHTML = `<span>${optText}</span> <i class="far fa-circle"></i>`;
-      btn.addEventListener('click', () => handleOptionClick(index, q.correct, q.explanation));
+      btn.className = 'quiz-option-btn qna-math-render';
+      btn.innerHTML = `<span><strong>${String.fromCharCode(65 + index)}:</strong> ${optText}</span> <i class="far fa-circle"></i>`;
+      btn.addEventListener('click', () => handleOptionClick(index, correctIdx, q.explanation));
       optionsGrid.appendChild(btn);
+    });
+  }
+
+  // Trigger KaTeX rendering on formulas in question & options
+  if (window.renderMathInElement) {
+    window.renderMathInElement(document.getElementById('quizPlayView'), {
+      delimiters: [
+        { left: "$$", right: "$$", display: true },
+        { left: "\\[", right: "\\]", display: true },
+        { left: "$", right: "$", display: false },
+        { left: "\\(", right: "\\)", display: false }
+      ],
+      throwOnError: false
     });
   }
 }
@@ -277,7 +333,7 @@ function handleOptionClick(selectedIndex, correctIndex, explanation) {
     optionBtns[selectedIndex].querySelector('i').className = 'fas fa-check-circle';
 
     if (feedbackBox) {
-      feedbackBox.className = 'quiz-feedback show';
+      feedbackBox.className = 'quiz-feedback show qna-math-render';
       feedbackBox.style.backgroundColor = 'var(--accent-emerald-light)';
       feedbackBox.style.color = '#065F46';
       feedbackBox.innerHTML = `<strong><i class="fas fa-check-circle"></i> Correct!</strong> ${explanation}`;
@@ -285,29 +341,41 @@ function handleOptionClick(selectedIndex, correctIndex, explanation) {
   } else {
     optionBtns[selectedIndex].classList.add('wrong');
     optionBtns[selectedIndex].querySelector('i').className = 'fas fa-times-circle';
-    optionBtns[correctIndex].classList.add('correct');
-    optionBtns[correctIndex].querySelector('i').className = 'fas fa-check-circle';
+    if (optionBtns[correctIndex]) {
+      optionBtns[correctIndex].classList.add('correct');
+      optionBtns[correctIndex].querySelector('i').className = 'fas fa-check-circle';
+    }
 
     if (feedbackBox) {
-      feedbackBox.className = 'quiz-feedback show';
+      feedbackBox.className = 'quiz-feedback show qna-math-render';
       feedbackBox.style.backgroundColor = 'var(--accent-coral-light)';
       feedbackBox.style.color = '#991B1B';
-      feedbackBox.innerHTML = `<strong><i class="fas fa-info-circle"></i> Review:</strong> ${explanation}`;
+      feedbackBox.innerHTML = `<strong><i class="fas fa-info-circle"></i> Review Solution:</strong> ${explanation}`;
     }
+  }
+
+  if (window.renderMathInElement && feedbackBox) {
+    window.renderMathInElement(feedbackBox, {
+      delimiters: [
+        { left: "$$", right: "$$", display: true },
+        { left: "\\[", right: "\\]", display: true },
+        { left: "$", right: "$", display: false },
+        { left: "\\(", right: "\\)", display: false }
+      ],
+      throwOnError: false
+    });
   }
 
   if (nextBtn) nextBtn.style.display = 'inline-flex';
 }
 
 function loadNextQuestion() {
-  const questions = QUIZ_DATA[currentLevel];
   currentQuestionIndex++;
-  if (currentQuestionIndex < questions.length) renderQuestion();
+  if (currentQuestionIndex < currentQuestionsList.length) renderQuestion();
   else showQuizResults();
 }
 
 function showQuizResults() {
-  const questions = QUIZ_DATA[currentLevel];
   document.getElementById('quizPlayView').style.display = 'none';
   const resultView = document.getElementById('quizResultView');
   resultView.style.display = 'block';
@@ -315,10 +383,10 @@ function showQuizResults() {
   const scoreText = document.getElementById('resultScoreText');
   const scoreMsg = document.getElementById('resultMsg');
 
-  if (scoreText) scoreText.innerText = `${userScore}/${questions.length}`;
+  if (scoreText) scoreText.innerText = `${userScore}/${currentQuestionsList.length}`;
   if (scoreMsg) {
-    if (userScore === questions.length) scoreMsg.innerText = "🌟 Perfect Score! You're mathematically sharp. Teacher Chyma can help you excel even further!";
-    else scoreMsg.innerText = "👍 Great effort! Teacher Chyma specializes in breaking down tough concepts into simple steps.";
+    if (userScore === currentQuestionsList.length) scoreMsg.innerText = "🌟 Perfect Score! Excellent mathematical understanding. Teacher Chyma can help you excel even further!";
+    else scoreMsg.innerText = "👍 Great effort! Review the step-by-step solutions or ask a question in the Q&A Hub!";
   }
 }
 

@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Teacher Admin System | Teacher Chyma - Mathematics Educator</title>
+
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="Official Teacher Administration System for Teacher Chyma. Manage quiz question banks, create level-based MCQs, and view student trial results.">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Custom Stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Floating Background Mathematical Symbols -->
+  <div class="bg-math-patterns">
+    <div class="math-symbol" style="top: 15%; left: 6%; font-size: 3rem; animation-delay: 0s;">π</div>
+    <div class="math-symbol" style="top: 25%; right: 8%; font-size: 3rem; animation-delay: -2s;">√x</div>
+    <div class="math-symbol" style="top: 55%; left: 4%; font-size: 3.5rem; animation-delay: -4s;">∑</div>
+    <div class="math-symbol" style="top: 70%; right: 6%; font-size: 3rem; animation-delay: -1s;">Δ</div>
+  </div>
+
+  <!-- ------------------------------------------------------------------------
+       HEADER & NAVIGATION BAR
+       ------------------------------------------------------------------------ -->
+  <header class="navbar">
+    <div class="container">
+      <a href="index.html" class="logo">
+        <div class="logo-badge">
+          <i class="fas fa-square-root-variable"></i>
+        </div>
+        <span>Teacher <span class="gradient-text">Chyma</span></span>
+      </a>
+
+      <nav class="nav-links" id="navLinks">
+        <a href="index.html" class="nav-link"><i class="fas fa-home"></i> Home</a>
+        <a href="quiz.html" class="nav-link"><i class="fas fa-graduation-cap"></i> Student Quiz Hub</a>
+        <a href="index.html#contact" class="nav-link">Contact</a>
+      </nav>
+
+      <div class="nav-actions">
+        <button class="theme-toggle" id="themeToggle" title="Toggle Light/Dark Mode" aria-label="Toggle Theme">
+          <i class="fas fa-moon"></i>
+        </button>
+        <a href="quiz.html" class="btn btn-outline btn-sm">
+          <i class="fas fa-user-graduate"></i> Student View
+        </a>
+        <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle Navigation">
+          <i class="fas fa-bars"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ------------------------------------------------------------------------
+       TEACHER ADMIN SYSTEM HUB
+       ------------------------------------------------------------------------ -->
+  <main class="section" style="padding-top: 100px;">
+    <div class="container">
+
+      <!-- Header Title -->
+      <div class="section-header text-center" style="max-width: 760px; margin: 0 auto 32px auto;">
+        <div class="hero-badge" style="margin: 0 auto 12px auto;">
+          <i class="fas fa-user-shield"></i>
+          <span>Educator Management Portal</span>
+        </div>
+        <h2 class="section-title">
+          Teacher Admin <span class="gradient-text">System</span>
+        </h2>
+        <p class="section-subtitle">
+          Manage your quiz questions, create level-based MCQs, and monitor student trial results in real time.
+        </p>
+      </div>
+
+      <!-- Firebase Status Notice -->
+      <div id="firebaseNoticeBox" style="margin-bottom: 24px;"></div>
+
+      <!-- LOGGED OUT VIEW: Login Card -->
+      <div id="teacherLoggedOutView" class="quiz-creator-card text-center" style="max-width: 480px; margin: 0 auto 40px auto; padding: 40px 24px;">
+        <div class="logo-badge" style="width: 56px; height: 56px; font-size: 1.5rem; margin: 0 auto 16px auto;">
+          <i class="fas fa-lock"></i>
+        </div>
+        <h3 style="font-size: 1.3rem; margin-bottom: 8px; font-family: var(--font-heading);">Teacher Chyma Login</h3>
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 24px;">
+          Enter your passcode or teacher email to unlock the interactive Admin System.
+        </p>
+
+        <form id="teacherLoginForm">
+          <div class="form-group" style="margin-bottom: 20px; text-align: left;">
+            <label for="teacherPasscode" class="form-label">Passcode / Teacher Email *</label>
+            <input type="password" id="teacherPasscode" class="form-input" placeholder="Enter 'chyma2026' or teacher email" required />
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 6px;">
+              Default admin passcode: <code>chyma2026</code>
+            </p>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%;">
+            <i class="fas fa-key"></i> Log In to Admin System
+          </button>
+        </form>
+      </div>
+
+      <!-- LOGGED IN VIEW: Full Interactive Admin System -->
+      <div id="teacherLoggedInView" style="display: none; margin-bottom: 40px;">
+        
+        <div class="quiz-creator-card">
+          <!-- Admin System Header Bar -->
+          <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 24px; border-bottom: 1px solid var(--border-color); padding-bottom: 16px;">
+            <div>
+              <h3 style="font-size: 1.25rem; font-weight: 700; display: flex; align-items: center; gap: 10px;">
+                <i class="fas fa-chalkboard-teacher" style="color: var(--primary);"></i> Teacher Chyma Admin Control Center
+              </h3>
+              <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">Authenticated Educator Account</p>
+            </div>
+            <button class="btn btn-outline btn-sm" id="teacherLogoutBtn">
+              <i class="fas fa-sign-out-alt"></i> Log Out Teacher
+            </button>
+          </div>
+
+          <!-- Dashboard Navigation Tabs -->
+          <div class="admin-level-tabs" style="margin-bottom: 28px;">
+            <button class="admin-level-tab active" id="adminTabSubmissionsBtn">
+              <i class="fas fa-chart-line"></i> Student Trial Results
+            </button>
+            <button class="admin-level-tab" id="adminTabCreateBtn">
+              <i class="fas fa-plus-circle"></i> Create MCQ Question
+            </button>
+            <button class="admin-level-tab" id="adminTabBankBtn">
+              <i class="fas fa-database"></i> Question Bank Directory
+            </button>
+          </div>
+
+          <!-- PANEL 1: Student Trial Results Dashboard -->
+          <div id="adminPanelSubmissions" style="display: block;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
+              <h4 style="font-size: 1.1rem; font-weight: 700;">
+                <i class="fas fa-users" style="color: var(--primary);"></i> Student Quiz Attempts & Score History
+              </h4>
+              <button class="btn btn-secondary btn-sm" id="refreshSubmissionsBtn">
+                <i class="fas fa-sync"></i> Refresh Data
+              </button>
+            </div>
+
+            <div style="overflow-x: auto;">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>Student Name</th>
+                    <th>Grade Level</th>
+                    <th>Score Ratio</th>
+                    <th>Percentage</th>
+                    <th>Date & Time</th>
+                  </tr>
+                </thead>
+                <tbody id="studentSubmissionsTableBody">
+                  <!-- Rendered dynamically by quiz.js -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- PANEL 2: Question Creator Studio Form -->
+          <div id="adminPanelCreate" style="display: none;">
+            <h4 style="margin-bottom: 16px; font-size: 1.1rem; font-weight: 700;">
+              <i class="fas fa-pen" style="color: var(--primary);"></i> Publish New Multiple Choice Question (MCQ)
+            </h4>
+
+            <form id="mcqCreatorForm">
+              <div class="form-row-2" style="margin-bottom: 14px;">
+                <div class="form-group">
+                  <label for="mcqLevel" class="form-label">Target Student Level *</label>
+                  <select id="mcqLevel" class="form-select" required>
+                    <option value="primary">Primary 4 - 6</option>
+                    <option value="jss">Junior Secondary (JSS)</option>
+                    <option value="sss" selected>Senior Secondary (SSS)</option>
+                    <option value="waec">WAEC / NECO Prep</option>
+                    <option value="sat_igcse">IGCSE / SAT Math</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="mcqQuestionText" class="form-label">Question Text *</label>
+                  <input type="text" id="mcqQuestionText" class="form-input" placeholder="e.g. Solve for x: 4x - 7 = 17" required />
+                </div>
+              </div>
+
+              <!-- 4 Options & Correct Answer Radio -->
+              <div class="form-group" style="margin-bottom: 16px;">
+                <label class="form-label">Options (Select radio button for Correct Answer) *</label>
+
+                <div class="mcq-option-input-group">
+                  <input type="radio" name="correctAnswer" value="0" id="optRad0" checked />
+                  <span class="radio-label">Option A:</span>
+                  <input type="text" id="mcqOptA" class="form-input" placeholder="Option A text" required />
+                </div>
+
+                <div class="mcq-option-input-group">
+                  <input type="radio" name="correctAnswer" value="1" id="optRad1" />
+                  <span class="radio-label">Option B:</span>
+                  <input type="text" id="mcqOptB" class="form-input" placeholder="Option B text" required />
+                </div>
+
+                <div class="mcq-option-input-group">
+                  <input type="radio" name="correctAnswer" value="2" id="optRad2" />
+                  <span class="radio-label">Option C:</span>
+                  <input type="text" id="mcqOptC" class="form-input" placeholder="Option C text" required />
+                </div>
+
+                <div class="mcq-option-input-group">
+                  <input type="radio" name="correctAnswer" value="3" id="optRad3" />
+                  <span class="radio-label">Option D:</span>
+                  <input type="text" id="mcqOptD" class="form-input" placeholder="Option D text" required />
+                </div>
+              </div>
+
+              <div class="form-group" style="margin-bottom: 20px;">
+                <label for="mcqExplanation" class="form-label">Solution Explanation for Students (Optional)</label>
+                <input type="text" id="mcqExplanation" class="form-input" placeholder="Explain the step-by-step solution..." />
+              </div>
+
+              <button type="submit" class="btn btn-primary" style="width: 100%;">
+                <i class="fas fa-plus-circle"></i> Save Question to Question Bank
+              </button>
+            </form>
+          </div>
+
+          <!-- PANEL 3: Question Bank Directory -->
+          <div id="adminPanelBank" style="display: none;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
+              <h4 style="font-size: 1.1rem; font-weight: 700;"><i class="fas fa-database"></i> All Created Questions</h4>
+              <span id="adminQuestionCount" class="qna-badge qna-badge-solved">0 Questions</span>
+            </div>
+            
+            <div class="admin-level-tabs" style="margin-bottom: 20px;">
+              <button class="admin-level-tab active admin-bank-filter" data-level="all">All Levels</button>
+              <button class="admin-level-tab admin-bank-filter" data-level="primary">Primary</button>
+              <button class="admin-level-tab admin-bank-filter" data-level="jss">JSS</button>
+              <button class="admin-level-tab admin-bank-filter" data-level="sss">SSS</button>
+              <button class="admin-level-tab admin-bank-filter" data-level="waec">WAEC</button>
+              <button class="admin-level-tab admin-bank-filter" data-level="sat_igcse">SAT/IGCSE</button>
+            </div>
+
+            <div id="adminQuestionBankList"></div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- EDIT QUESTION MODAL DIALOG -->
+  <dialog id="editMcqModal" class="qna-dialog" style="max-width: 600px;">
+    <div class="qna-modal-header">
+      <h3><i class="fas fa-edit" style="color: var(--primary);"></i> Edit Question & Answers</h3>
+      <button class="qna-modal-close" id="closeEditMcqModalBtn" aria-label="Close dialog">&times;</button>
+    </div>
+    <div class="qna-modal-body">
+      <form id="editMcqForm">
+        <input type="hidden" id="editMcqId" />
+
+        <div class="form-row-2" style="margin-bottom: 14px;">
+          <div class="form-group">
+            <label for="editMcqLevel" class="form-label">Target Level *</label>
+            <select id="editMcqLevel" class="form-select" required>
+              <option value="primary">Primary 4 - 6</option>
+              <option value="jss">Junior Secondary (JSS)</option>
+              <option value="sss">Senior Secondary (SSS)</option>
+              <option value="waec">WAEC / NECO Prep</option>
+              <option value="sat_igcse">IGCSE / SAT Math</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="editMcqQuestionText" class="form-label">Question Text *</label>
+            <input type="text" id="editMcqQuestionText" class="form-input" required />
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 16px;">
+          <label class="form-label">Options (Select radio button for Correct Answer) *</label>
+
+          <div class="mcq-option-input-group">
+            <input type="radio" name="editCorrectAnswer" value="0" id="editOptRad0" />
+            <span class="radio-label">Option A:</span>
+            <input type="text" id="editMcqOptA" class="form-input" required />
+          </div>
+
+          <div class="mcq-option-input-group">
+            <input type="radio" name="editCorrectAnswer" value="1" id="editOptRad1" />
+            <span class="radio-label">Option B:</span>
+            <input type="text" id="editMcqOptB" class="form-input" required />
+          </div>
+
+          <div class="mcq-option-input-group">
+            <input type="radio" name="editCorrectAnswer" value="2" id="editOptRad2" />
+            <span class="radio-label">Option C:</span>
+            <input type="text" id="editMcqOptC" class="form-input" required />
+          </div>
+
+          <div class="mcq-option-input-group">
+            <input type="radio" name="editCorrectAnswer" value="3" id="editOptRad3" />
+            <span class="radio-label">Option D:</span>
+            <input type="text" id="editMcqOptD" class="form-input" required />
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 20px;">
+          <label for="editMcqExplanation" class="form-label">Solution Explanation (Optional)</label>
+          <input type="text" id="editMcqExplanation" class="form-input" />
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width: 100%;">
+          <i class="fas fa-save"></i> Save & Update Question
+        </button>
+      </form>
+    </div>
+  </dialog>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-bottom">
+        <div>&copy; 2026 Chidimma Mary. All rights reserved.</div>
+        <div><span>Designed by <strong style="color: var(--primary);">Tonna</strong></span></div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Firebase & Quiz LMS Scripts -->
+  <script type="module" src="firebase-config.js"></script>
+  <script type="module" src="quiz.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

@@ -24,6 +24,11 @@
   <!-- Font Awesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
+  <!-- KaTeX LaTeX Math Renderer -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+
   <!-- Custom Stylesheet -->
   <link rel="stylesheet" href="styles.css">
 </head>
@@ -54,7 +59,8 @@
         <a href="#about" class="nav-link">About Educator</a>
         <a href="#specializations" class="nav-link">Curriculum</a>
         <a href="#methodology" class="nav-link">EdTech Method</a>
-        <a href="#quiz" class="nav-link">Math Challenge</a>
+        <a href="quiz.html" class="nav-link"><i class="fas fa-graduation-cap"></i> Student Quiz</a>
+        <a href="teacher.html" class="nav-link"><i class="fas fa-lock"></i> Teacher Portal</a>
         <a href="#estimator" class="nav-link">Fee Estimator</a>
         <a href="#contact" class="nav-link">Contact</a>
       </nav>
@@ -518,73 +524,72 @@
   </section>
 
   <!-- ------------------------------------------------------------------------
-       INTERACTIVE MATH QUIZ GAME ("Test Your Math Skills")
+       LEVEL-BASED MATH QUIZ LMS CALL-TO-ACTION BANNER
        ------------------------------------------------------------------------ -->
-  <section class="section" id="quiz" style="background: var(--bg-main);">
+  <section class="section quiz-creator-section" id="quiz-lms">
     <div class="container">
-      <div class="text-center mx-auto" style="max-width: 700px; margin-bottom: 30px;">
-        <span class="section-tag">
-          <i class="fas fa-gamepad"></i> Try It Now
-        </span>
-        <h2 class="section-title">Test Your Math Skills Widget</h2>
-        <p class="section-subtitle mx-auto">
-          Try this 3-question mini-quiz to experience Teacher Chyma's clear feedback style.
+      
+      <div class="section-header text-center" style="max-width: 760px; margin: 0 auto 36px auto;">
+        <div class="hero-badge" style="margin: 0 auto 12px auto;">
+          <i class="fas fa-graduation-cap"></i>
+          <span>Interactive Quiz LMS Hub</span>
+        </div>
+        <h2 class="section-title">
+          Interactive Math <span class="gradient-text">Quiz System</span>
+        </h2>
+        <p class="section-subtitle">
+          Test your math skills by grade level or log in to the Teacher Admin System to manage questions and review student trial results!
         </p>
       </div>
 
-      <div class="quiz-wrapper">
-        <div class="quiz-header">
-          <strong style="font-size: 1rem;"><i class="fas fa-brain" style="color: var(--primary);"></i> Math Challenge</strong>
-          <span id="quizCounter" style="font-weight: 700; font-size: 0.9rem; color: var(--primary);">Question 1 of 3</span>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px;">
+        <div class="quiz-creator-card text-center" style="margin-bottom: 0;">
+          <i class="fas fa-user-graduate" style="font-size: 2.5rem; color: var(--primary); margin-bottom: 16px;"></i>
+          <h3 style="font-size: 1.25rem; margin-bottom: 10px;">Student Quiz Portal</h3>
+          <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">
+            Enter your name, choose your grade level (Primary, JSS, SSS, WAEC, SAT), and complete interactive quizzes with instant scores.
+          </p>
+          <a href="quiz.html" class="btn btn-primary" style="width: 100%;">
+            <i class="fas fa-play-circle"></i> Open Student Quiz Portal
+          </a>
         </div>
 
-        <div class="quiz-level-selector">
-          <button class="quiz-level-btn" data-level="primary">Primary</button>
-          <button class="quiz-level-btn active" data-level="secondary">Secondary</button>
-          <button class="quiz-level-btn" data-level="examprep">WAEC/IGCSE/SAT</button>
-        </div>
-
-        <!-- Play View -->
-        <div id="quizPlayView">
-          <div class="quiz-progress-bar">
-            <div class="quiz-progress-fill" id="quizProgressFill"></div>
-          </div>
-
-          <div class="quiz-question-box">
-            <div class="quiz-question-text" id="quizQuestionText">Loading Question...</div>
-            <div class="quiz-options-grid" id="quizOptionsGrid"></div>
-          </div>
-
-          <div class="quiz-feedback" id="quizFeedbackBox"></div>
-
-          <div style="margin-top: 20px; text-align: right;">
-            <button class="btn btn-primary btn-sm" id="quizNextBtn" style="display: none;">
-              <span>Next Question</span>
-              <i class="fas fa-arrow-right"></i>
-            </button>
-          </div>
-        </div>
-
-        <!-- Result View -->
-        <div id="quizResultView" class="quiz-result-view">
-          <div class="result-score-circle" id="resultScoreText">3/3</div>
-          <h3 style="font-size: 1.5rem; margin-bottom: 8px;">Quiz Completed!</h3>
-          <p id="resultMsg" style="color: var(--text-muted); font-size: 0.95rem; max-width: 450px; margin: 0 auto 24px;"></p>
-
-          <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
-            <button class="btn btn-secondary btn-sm" id="quizRestartBtn">
-              <i class="fas fa-redo"></i>
-              <span>Try Again</span>
-            </button>
-            <a href="#contact" class="btn btn-primary btn-sm">
-              <i class="fas fa-paper-plane"></i>
-              <span>Book Full Session</span>
-            </a>
-          </div>
+        <div class="quiz-creator-card text-center" style="margin-bottom: 0;">
+          <i class="fas fa-user-shield" style="font-size: 2.5rem; color: var(--accent-coral); margin-bottom: 16px;"></i>
+          <h3 style="font-size: 1.25rem; margin-bottom: 10px;">Teacher Admin System</h3>
+          <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">
+            Log in as Teacher Chyma to create new MCQs, manage question bank directories, and monitor student trial scores in real time.
+          </p>
+          <a href="teacher.html" class="btn btn-outline" style="width: 100%;">
+            <i class="fas fa-lock"></i> Log In to Teacher System
+          </a>
         </div>
       </div>
+
     </div>
   </section>
+
+  <!-- Teacher Login Modal Dialog -->
+  <dialog id="teacherLoginModal" class="qna-dialog" style="max-width: 420px;">
+    <div class="qna-modal-header">
+      <h3><i class="fas fa-lock" style="color: var(--primary);"></i> Teacher Chyma Login</h3>
+      <button class="qna-modal-close" id="closeTeacherLoginBtn" aria-label="Close dialog">&times;</button>
+    </div>
+    <div class="qna-modal-body">
+      <form id="teacherLoginForm">
+        <div class="form-group" style="margin-bottom: 16px;">
+          <label for="teacherPasscode" class="form-label">Passcode / Email *</label>
+          <input type="password" id="teacherPasscode" class="form-input" placeholder="Enter 'chyma2026' or teacher email" required />
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 6px;">
+            Default passcode: <code>chyma2026</code>
+          </p>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%;">
+          <i class="fas fa-key"></i> Log In
+        </button>
+      </form>
+    </div>
+  </dialog>
 
   <!-- ------------------------------------------------------------------------
        INTERACTIVE LEARNING PLAN & FEE ESTIMATOR
@@ -775,6 +780,150 @@
     </div>
   </section>
 
+  <!-- ------------------------------------------------------------------------
+       MATH Q&A (LMS) FORUM HUB SECTION
+       ------------------------------------------------------------------------ -->
+  <section class="section qna-section" id="qna">
+    <div class="container" id="qnaContainer">
+      
+      <div class="section-header text-center" style="max-width: 720px; margin: 0 auto 36px auto;">
+        <div class="hero-badge" style="margin: 0 auto 12px auto;">
+          <i class="fas fa-graduation-cap"></i>
+          <span>Interactive Student LMS Hub</span>
+        </div>
+        <h2 class="section-title">
+          Math <span class="gradient-text">Question & Answer</span> Hub
+        </h2>
+        <p class="section-subtitle">
+          Stuck on a WAEC, IGCSE, SAT, or classroom math problem? Post your question below, format equations in LaTeX, upload diagram photos, and get step-by-step verified solutions from Teacher Chyma!
+        </p>
+      </div>
+
+      <!-- Setup Banner Alert (Firebase status notice) -->
+      <div id="qnaNoticeBox" class="qna-notice-box"></div>
+
+      <!-- Q&A Control Panel (Search, Filter, Category Tabs, Ask Button) -->
+      <div class="qna-controls-wrapper">
+        <div class="qna-top-bar">
+          <div class="qna-search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="qnaSearchInput" class="qna-search-input" placeholder="Search math questions, topics (e.g. quadratic, circle, SAT)..." />
+          </div>
+
+          <div class="qna-filter-pills">
+            <button class="qna-filter-btn active" data-filter="all">All</button>
+            <button class="qna-filter-btn" data-filter="unanswered">Unanswered</button>
+            <button class="qna-filter-btn" data-filter="solved">Solved</button>
+          </div>
+
+          <button class="btn btn-primary" id="openAskModalBtn">
+            <i class="fas fa-plus"></i>
+            <span>Ask Question</span>
+          </button>
+        </div>
+
+        <div class="qna-category-tabs">
+          <button class="qna-cat-tab active" data-category="all"><i class="fas fa-border-all"></i> All Topics</button>
+          <button class="qna-cat-tab" data-category="algebra"><i class="fas fa-square-root-variable"></i> Algebra</button>
+          <button class="qna-cat-tab" data-category="geometry"><i class="fas fa-shapes"></i> Geometry</button>
+          <button class="qna-cat-tab" data-category="calculus"><i class="fas fa-wave-square"></i> Calculus / Further Math</button>
+          <button class="qna-cat-tab" data-category="waec"><i class="fas fa-certificate"></i> WAEC / NECO</button>
+          <button class="qna-cat-tab" data-category="igcse_sat"><i class="fas fa-globe-americas"></i> IGCSE / SAT Math</button>
+          <button class="qna-cat-tab" data-category="general"><i class="fas fa-calculator"></i> General Math</button>
+        </div>
+      </div>
+
+      <!-- Q&A Cards Grid -->
+      <div class="qna-grid" id="qnaGrid">
+        <!-- Rendered dynamically by qna.js -->
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ------------------------------------------------------------------------
+       ASK A QUESTION MODAL DIALOG
+       ------------------------------------------------------------------------ -->
+  <dialog id="askQuestionModal" class="qna-dialog">
+    <div class="qna-modal-header">
+      <h3><i class="fas fa-question-circle" style="color: var(--primary);"></i> Ask a Math Question</h3>
+      <button class="qna-modal-close" id="closeAskModalBtn" aria-label="Close dialog">&times;</button>
+    </div>
+    
+    <div class="qna-modal-body">
+      <form id="askQuestionForm">
+        <div class="form-group" style="margin-bottom: 14px;">
+          <label for="qTitle" class="form-label">Question Title / Topic *</label>
+          <input type="text" id="qTitle" class="form-input" placeholder="e.g. How to solve simultaneous linear and quadratic equations?" required />
+        </div>
+
+        <div class="form-row-2" style="margin-bottom: 14px;">
+          <div class="form-group">
+            <label for="qCategory" class="form-label">Math Category *</label>
+            <select id="qCategory" class="form-select" required>
+              <option value="algebra">Algebra</option>
+              <option value="geometry">Geometry</option>
+              <option value="calculus">Calculus / Further Math</option>
+              <option value="waec">WAEC / NECO Prep</option>
+              <option value="igcse_sat">IGCSE / SAT Math</option>
+              <option value="general" selected>General Mathematics</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="qAuthorName" class="form-label">Your Name / Student ID</label>
+            <input type="text" id="qAuthorName" class="form-input" placeholder="e.g. Chinedu or Student Name" />
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 14px;">
+          <label for="qContent" class="form-label">Problem Details & Formulas *</label>
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 6px;">
+            Tip: Use LaTeX math syntax like <code>\( \frac{a}{b} \)</code> or click the quick symbols below!
+          </p>
+
+          <div class="qna-math-toolbar" id="askMathToolbar">
+            <button type="button" class="math-tool-btn" data-math="\frac{a}{b}">\(\frac{a}{b}\)</button>
+            <button type="button" class="math-tool-btn" data-math="\sqrt{x}">\(\sqrt{x}\)</button>
+            <button type="button" class="math-tool-btn" data-math="x^2">\(x^2\)</button>
+            <button type="button" class="math-tool-btn" data-math="\pi">\(\pi\)</button>
+            <button type="button" class="math-tool-btn" data-math="\theta">\(\theta\)</button>
+            <button type="button" class="math-tool-btn" data-math="\pm">\(\pm\)</button>
+            <button type="button" class="math-tool-btn" data-math="\int">\(\int\)</button>
+            <button type="button" class="math-tool-btn" data-math="\sum">\(\sum\)</button>
+          </div>
+
+          <textarea id="qContent" class="form-textarea" rows="5" placeholder="Write out the question details or paste formula text..." required></textarea>
+          
+          <div class="qna-math-preview" id="mathPreviewArea" title="Live KaTeX Formula Preview"></div>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 20px;">
+          <label for="qAttachment" class="form-label">Attach Homework Diagram / Question Photo (Optional)</label>
+          <input type="file" id="qAttachment" accept="image/*" class="form-input" style="padding: 8px;" />
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width: 100%;">
+          <i class="fas fa-paper-plane"></i> Post Math Question
+        </button>
+      </form>
+    </div>
+  </dialog>
+
+  <!-- ------------------------------------------------------------------------
+       VIEW QUESTION & ANSWER THREAD MODAL DIALOG
+       ------------------------------------------------------------------------ -->
+  <dialog id="viewThreadModal" class="qna-dialog">
+    <div class="qna-modal-header">
+      <h3><i class="fas fa-comments" style="color: var(--primary);"></i> Question & Answer Thread</h3>
+      <button class="qna-modal-close" id="closeThreadModalBtn" aria-label="Close dialog">&times;</button>
+    </div>
+
+    <div class="qna-modal-body" id="threadModalBody">
+      <!-- Rendered dynamically by qna.js -->
+    </div>
+  </dialog>
+
   <!-- Floating WhatsApp Action Button -->
   <a href="https://wa.me/2349127245516?text=Hello%20Teacher%20Chidimma!%20I%20would%20like%20to%20inquire%20about%20your%20Mathematics%20tutoring%20sessions." target="_blank" class="floating-whatsapp" title="Chat on WhatsApp" aria-label="Chat on WhatsApp">
     <i class="fab fa-whatsapp"></i>
@@ -801,7 +950,8 @@
           <ul style="display: flex; flex-direction: column; gap: 6px; font-size: 0.85rem; color: var(--text-muted);">
             <li><a href="#about">About</a></li>
             <li><a href="#specializations">Curriculum</a></li>
-            <li><a href="#quiz">Math Quiz</a></li>
+            <li><a href="quiz.html">Student Quiz Hub</a></li>
+            <li><a href="teacher.html">Teacher Admin Portal</a></li>
             <li><a href="#estimator">Fee Estimator</a></li>
           </ul>
         </div>
@@ -838,6 +988,9 @@
     </div>
   </footer>
 
+  <!-- Firebase & Quiz LMS Scripts -->
+  <script type="module" src="firebase-config.js"></script>
+  <script type="module" src="quiz.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
