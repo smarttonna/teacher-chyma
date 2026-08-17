@@ -563,8 +563,18 @@
                   <i class="fas fa-search"></i>
                   <input type="text" id="bankSearchInput" class="form-input" placeholder="Search questions..." />
                 </div>
-                
+
                 <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                  <select id="bankTopicFilter" class="form-select" style="max-width: 220px; padding: 6px 12px; font-size: 0.85rem;">
+                    <option value="all">🌐 All Topics</option>
+                    <option value="Fractions">🍕 Fractions (204 Qs)</option>
+                    <option value="Factors, Multiples, LCM & HCF">🔢 Factors, Multiples, LCM & HCF (200 Qs)</option>
+                    <option value="Algebra">🧮 Algebra & Equations</option>
+                    <option value="Geometry">📐 Geometry & Shapes</option>
+                    <option value="Trigonometry">📐 Trigonometry & Angles</option>
+                    <option value="Statistics">📊 Statistics & Probability</option>
+                  </select>
+
                   <button class="btn btn-outline btn-sm" id="seed200Btn">
                     <i class="fas fa-file-word"></i> Load 404 DOCX Questions (Fractions & Factors)
                   </button>

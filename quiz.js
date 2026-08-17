@@ -515,9 +515,12 @@ function setupTeacherAdminPanels() {
   if (subSearchInput) subSearchInput.addEventListener("input", filterAndRenderSubmissions);
   if (subLevelFilter) subLevelFilter.addEventListener("change", filterAndRenderSubmissions);
 
-  // Bank Search Input
+  // Bank Search & Topic Filters
   const bankSearchInput = document.getElementById("bankSearchInput");
-  if (bankSearchInput) bankSearchInput.addEventListener("input", filterAndRenderQuestionBank);
+  const bankTopicFilter = document.getElementById("bankTopicFilter");
+
+  if (bankSearchInput) bankSearchInput.addEventListener("input", () => filterAndRenderQuestionBank());
+  if (bankTopicFilter) bankTopicFilter.addEventListener("change", () => filterAndRenderQuestionBank());
 
   // Register Student Form submit
   const regStudentForm = document.getElementById("registerStudentForm");
@@ -889,6 +892,7 @@ function filterAndRenderQuestionBank(activeFilter = "all") {
   if (!container) return;
 
   const searchQuery = (document.getElementById("bankSearchInput")?.value || "").toLowerCase().trim();
+  const topicFilter = document.getElementById("bankTopicFilter")?.value || "all";
   const filter = typeof activeFilter === "string" ? activeFilter : (document.querySelector(".admin-bank-filter.active")?.dataset.level || "all");
 
   let list = cachedQuestions;
@@ -897,8 +901,12 @@ function filterAndRenderQuestionBank(activeFilter = "all") {
     list = list.filter(q => q.level === filter);
   }
 
+  if (topicFilter !== "all") {
+    list = list.filter(q => q.topic === topicFilter);
+  }
+
   if (searchQuery) {
-    list = list.filter(q => (q.question || "").toLowerCase().includes(searchQuery));
+    list = list.filter(q => (q.question || "").toLowerCase().includes(searchQuery) || (q.topic || "").toLowerCase().includes(searchQuery));
   }
 
   const countBadge = document.getElementById("adminQuestionCount");
